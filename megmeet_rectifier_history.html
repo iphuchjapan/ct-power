@@ -1,0 +1,1741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Megmeet Rectifier — Historical Telemetry Analytics (D:\Rectifier)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --bg-base: #060913;
+            --bg-surface: rgba(15, 23, 42, 0.75);
+            --bg-card: rgba(30, 41, 59, 0.45);
+            --border: rgba(255, 255, 255, 0.08);
+            --border-highlight: rgba(56, 189, 248, 0.3);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --cyan: #38bdf8;
+            --green: #10b981;
+            --amber: #f59e0b;
+            --rose: #f43f5e;
+            --indigo: #818cf8;
+            --purple: #c084fc;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 1.5rem;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.12) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(99, 102, 241, 0.12) 0px, transparent 50%),
+                radial-gradient(at 50% 100%, rgba(16, 185, 129, 0.08) 0px, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        /* Top Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 1.25rem 2rem;
+            margin-bottom: 1.5rem;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header-title-box {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+        }
+
+        .header-icon {
+            font-size: 2.2rem;
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(99, 102, 241, 0.2));
+            border: 1px solid var(--border-highlight);
+            border-radius: 14px;
+            width: 58px;
+            height: 58px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-title h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .header-title p {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin-top: 0.2rem;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 0.6rem 1.1rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--cyan);
+            transform: translateY(-1px);
+        }
+        .btn-live {
+            background: rgba(16, 185, 129, 0.15);
+            border-color: rgba(16, 185, 129, 0.4);
+            color: #34d399;
+        }
+        .btn-live:hover {
+            background: rgba(16, 185, 129, 0.25);
+            border-color: #34d399;
+        }
+        .btn-primary {
+            background: rgba(56, 189, 248, 0.15);
+            border-color: rgba(56, 189, 248, 0.4);
+            color: var(--cyan);
+        }
+        .btn-primary:hover {
+            background: rgba(56, 189, 248, 0.25);
+            border-color: var(--cyan);
+        }
+
+        /* Source Control & Drag Drop Bar */
+        .source-bar {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            backdrop-filter: blur(14px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .source-selector-group {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            flex-wrap: wrap;
+        }
+
+        .source-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        select.custom-select {
+            background: #0f172a;
+            border: 1px solid var(--border-highlight);
+            color: var(--text-main);
+            padding: 0.55rem 1rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            outline: none;
+            cursor: pointer;
+            min-width: 200px;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            background: rgba(16, 185, 129, 0.12);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        .status-badge.offline {
+            background: rgba(245, 158, 11, 0.12);
+            color: #fbbf24;
+            border-color: rgba(245, 158, 11, 0.3);
+        }
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+            display: inline-block;
+        }
+
+        .dropzone {
+            border: 2px dashed rgba(56, 189, 248, 0.35);
+            background: rgba(56, 189, 248, 0.03);
+            border-radius: 12px;
+            padding: 0.6rem 1.25rem;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            transition: all 0.2s ease;
+        }
+        .dropzone:hover, .dropzone.dragover {
+            border-color: var(--cyan);
+            background: rgba(56, 189, 248, 0.08);
+            color: var(--text-main);
+        }
+
+        /* Filter Controls Bar */
+        .filter-bar {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 0.4rem 0.85rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .filter-btn:hover {
+            color: var(--text-main);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+        .filter-btn.active {
+            background: rgba(56, 189, 248, 0.2);
+            border-color: var(--cyan);
+            color: var(--cyan);
+        }
+
+        .dataset-info {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+        }
+        .dataset-info strong {
+            color: var(--text-main);
+        }
+
+        /* KPI Cards Grid */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .kpi-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.1rem;
+            backdrop-filter: blur(14px);
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--card-accent, var(--cyan));
+        }
+
+        .kpi-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .kpi-value {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.65rem;
+            font-weight: 800;
+            color: var(--text-main);
+            line-height: 1.15;
+        }
+        .kpi-sub {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            margin-top: 0.1rem;
+        }
+        .kpi-sub span.highlight {
+            color: var(--cyan);
+            font-weight: 600;
+        }
+
+        /* Tab Navigation */
+        .tab-nav {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.25rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.92rem;
+            font-weight: 600;
+            padding: 0.6rem 1.2rem;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+        }
+        .tab-btn:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.04);
+        }
+        .tab-btn.active {
+            color: var(--cyan);
+            background: rgba(56, 189, 248, 0.12);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+
+        /* Charts Layout */
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(460px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+        @media (max-width: 600px) {
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        .full-width-chart {
+            grid-column: 1 / -1;
+        }
+
+        .chart-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.25rem;
+            backdrop-filter: blur(14px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .chart-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .chart-stats-badge {
+            font-size: 0.78rem;
+            padding: 0.25rem 0.6rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-muted);
+        }
+
+        .chart-canvas-box {
+            position: relative;
+            width: 100%;
+            height: 310px;
+        }
+        .chart-canvas-box.tall {
+            height: 380px;
+        }
+
+        /* Data Table */
+        .table-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.25rem;
+            backdrop-filter: blur(14px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+        table.data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            color: var(--text-main);
+        }
+        table.data-table th, table.data-table td {
+            padding: 0.65rem 0.85rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            white-space: nowrap;
+        }
+        table.data-table th {
+            background: rgba(30, 41, 59, 0.6);
+            color: var(--text-muted);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            position: sticky;
+            top: 0;
+        }
+        table.data-table tr:hover td {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .pagination-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        /* Notification Toast */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: #0f172a;
+            border: 1px solid var(--cyan);
+            color: var(--text-main);
+            padding: 0.8rem 1.4rem;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            font-size: 0.88rem;
+            font-weight: 600;
+            display: none;
+            z-index: 9999;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        /* Empty state */
+        .empty-state {
+            padding: 4rem 2rem;
+            text-align: center;
+            background: var(--bg-surface);
+            border: 1px dashed var(--border-highlight);
+            border-radius: 18px;
+            margin: 2rem 0;
+        }
+        .empty-state h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.35rem;
+            margin-bottom: 0.5rem;
+        }
+        .empty-state p {
+            color: var(--text-muted);
+            max-width: 500px;
+            margin: 0 auto 1.5rem auto;
+            font-size: 0.9rem;
+        }
+
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="header-title-box">
+            <div class="header-icon">📈</div>
+            <div class="header-title">
+                <h1>Megmeet Rectifier — Historical Telemetry Analytics</h1>
+                <p>Telemetry Data Visualizer & Performance Analysis for <code>D:\Rectifier</code></p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <a href="http://localhost:8888/megmeet_rectifier_dashboard.html" class="btn btn-live" target="_blank">
+                <span class="status-dot"></span> Live Monitor (5m)
+            </a>
+            <button class="btn btn-primary" onclick="exportFilteredCSV()">
+                📥 Export CSV
+            </button>
+            <button class="btn" onclick="window.print()">
+                🖨️ Print
+            </button>
+        </div>
+    </header>
+
+    <!-- Source Selection & File Ingestion Bar -->
+    <div class="source-bar">
+        <div class="source-selector-group">
+            <span class="source-label">📅 Select Date:</span>
+            <select id="dateSelect" class="custom-select" onchange="onDateSelectChanged()">
+                <option value="" disabled selected>Loading dates...</option>
+            </select>
+            <div id="serverBadge" class="status-badge">
+                <span class="status-dot"></span> <span id="serverStatusText">Connecting...</span>
+            </div>
+        </div>
+
+        <div class="source-selector-group">
+            <label class="dropzone" id="dropzoneBox" onclick="document.getElementById('fileInput').click()">
+                📂 Drag & drop <code>.csv</code> or click to browse
+                <input type="file" id="fileInput" accept=".csv,.jsonl,.txt" style="display:none" onchange="onLocalFilePicked(event)">
+            </label>
+        </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+        <div class="filter-group">
+            <span class="source-label">⏰ Range:</span>
+            <button class="filter-btn active" onclick="setTimeFilter('all', this)">All Day (24h)</button>
+            <button class="filter-btn" onclick="setTimeFilter('night', this)">00:00 - 06:00</button>
+            <button class="filter-btn" onclick="setTimeFilter('morning', this)">06:00 - 12:00</button>
+            <button class="filter-btn" onclick="setTimeFilter('afternoon', this)">12:00 - 18:00</button>
+            <button class="filter-btn" onclick="setTimeFilter('evening', this)">18:00 - 24:00</button>
+            <button class="filter-btn" onclick="setTimeFilter('last6h', this)">Last 6h</button>
+            <button class="filter-btn" onclick="setTimeFilter('last1h', this)">Last 1h</button>
+        </div>
+
+        <div class="dataset-info" id="datasetInfo">
+            Loaded: <strong>0 records</strong> | Time Span: <strong>--</strong>
+        </div>
+    </div>
+
+    <!-- Top KPI Grid -->
+    <div class="kpi-grid">
+        <div class="kpi-card" style="--card-accent: var(--cyan);">
+            <div class="kpi-label">⚡ AC Input Voltage</div>
+            <div class="kpi-value" id="kpi-ac-v">-- <span style="font-size: 0.9rem; font-weight: 500;">V</span></div>
+            <div class="kpi-sub">Min: <span id="kpi-ac-min">--</span> | Max: <span id="kpi-ac-max">--</span> V</div>
+        </div>
+        <div class="kpi-card" style="--card-accent: var(--indigo);">
+            <div class="kpi-label">⚡ AC Active Power</div>
+            <div class="kpi-value" id="kpi-ac-kw">-- <span style="font-size: 0.9rem; font-weight: 500;">kW</span></div>
+            <div class="kpi-sub">Current: <span id="kpi-ac-cur">-- A</span> | Energy: <span id="kpi-ac-kwh">--</span></div>
+        </div>
+        <div class="kpi-card" style="--card-accent: var(--green);">
+            <div class="kpi-label">🔋 DC Bus Output</div>
+            <div class="kpi-value" id="kpi-dc-v">-- <span style="font-size: 0.9rem; font-weight: 500;">V</span></div>
+            <div class="kpi-sub">Total Load: <span id="kpi-dc-cur" class="highlight">-- A</span> | Power: <span id="kpi-dc-p">-- W</span></div>
+        </div>
+        <div class="kpi-card" style="--card-accent: var(--purple);">
+            <div class="kpi-label">⚙️ Conversion Efficiency</div>
+            <div class="kpi-value" id="kpi-eff">-- <span style="font-size: 0.9rem; font-weight: 500;">%</span></div>
+            <div class="kpi-sub">Min: <span id="kpi-eff-min">--%</span> | Peak: <span id="kpi-eff-max">--%</span></div>
+        </div>
+        <div class="kpi-card" style="--card-accent: var(--amber);">
+            <div class="kpi-label">🩺 Battery SOH & SOC</div>
+            <div class="kpi-value" id="kpi-bat-soh">-- <span style="font-size: 0.9rem; font-weight: 500;">% SOH</span></div>
+            <div class="kpi-sub">SOC: <span id="kpi-bat-soc" class="highlight">--%</span> | Pack: <span id="kpi-bat-v">-- V</span></div>
+        </div>
+        <div class="kpi-card" style="--card-accent: var(--rose);">
+            <div class="kpi-label">⚖️ 15-Cell Max Spread (ΔV)</div>
+            <div class="kpi-value" id="kpi-cell-delta">-- <span style="font-size: 0.9rem; font-weight: 500;">mV</span></div>
+            <div class="kpi-sub" id="kpi-cell-status">Balancing: Normal (< 60mV)</div>
+        </div>
+        <div class="kpi-card" style="--card-accent: var(--indigo);">
+            <div class="kpi-label">🌡️ Cabinet Environment</div>
+            <div class="kpi-value" id="kpi-cab-temp">-- <span style="font-size: 0.9rem; font-weight: 500;">°C</span></div>
+            <div class="kpi-sub">Humidity: <span id="kpi-cab-hum">-- %RH</span> | Bat: <span id="kpi-bat-temp">-- °C</span></div>
+        </div>
+        <div class="kpi-card" style="--card-accent: var(--cyan);">
+            <div class="kpi-label">📊 3-Module Load Share</div>
+            <div class="kpi-value" id="kpi-mod-share" style="font-size: 1.25rem;">33 / 33 / 33 <span style="font-size: 0.8rem;">%</span></div>
+            <div class="kpi-sub">Spread: <span id="kpi-mod-spread" class="highlight">±0.2 A</span> (Balanced)</div>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab('tab-overview', this)">📈 Main Telemetry Trends</button>
+        <button class="tab-btn" onclick="switchTab('tab-cells', this)">🔋 15-Cell Battery Matrix</button>
+        <button class="tab-btn" onclick="switchTab('tab-climate', this)">🌡️ Thermal & Climate Trends</button>
+        <button class="tab-btn" onclick="switchTab('tab-modules', this)">⚖️ Module Load Sharing</button>
+        <button class="tab-btn" onclick="switchTab('tab-table', this)">📋 Raw Records Table</button>
+    </div>
+
+    <!-- TAB 1: OVERVIEW TRENDS -->
+    <div id="tab-overview" class="tab-content active">
+        <div class="charts-container">
+            <!-- Chart 1: Voltage -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">⚡ Voltage Stability Trend (AC Vin vs DC Vout)</div>
+                    <div class="chart-stats-badge" id="badge-v">Dual-Axis Tracking</div>
+                </div>
+                <div class="chart-canvas-box">
+                    <canvas id="chartVoltage"></canvas>
+                </div>
+            </div>
+
+            <!-- Chart 2: Current & Sharing -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">🔋 Load Current & 3-Module Share (A)</div>
+                    <div class="chart-stats-badge" id="badge-i">Load Distribution</div>
+                </div>
+                <div class="chart-canvas-box">
+                    <canvas id="chartCurrent"></canvas>
+                </div>
+            </div>
+
+            <!-- Chart 3: Power & Efficiency -->
+            <div class="chart-card full-width-chart">
+                <div class="chart-header">
+                    <div class="chart-title">⚙️ Active Power & System Efficiency Curve</div>
+                    <div class="chart-stats-badge" id="badge-p">AC kW vs DC kW vs Efficiency %</div>
+                </div>
+                <div class="chart-canvas-box tall">
+                    <canvas id="chartPower"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 2: BATTERY 15-CELL MATRIX -->
+    <div id="tab-cells" class="tab-content">
+        <div class="charts-container">
+            <!-- Chart 4: All 15 Cells Voltages -->
+            <div class="chart-card full-width-chart">
+                <div class="chart-header">
+                    <div class="chart-title">🔋 Individual Cell Voltages (Cell 1 to Cell 15)</div>
+                    <div class="chart-stats-badge">Normal Float Range: 3.34V - 3.42V</div>
+                </div>
+                <div class="chart-canvas-box tall">
+                    <canvas id="chartCells"></canvas>
+                </div>
+            </div>
+
+            <!-- Chart 5: Cell Delta Spread -->
+            <div class="chart-card full-width-chart">
+                <div class="chart-header">
+                    <div class="chart-title">⚖️ Cell Voltage Spread Delta (ΔV = Max - Min in mV)</div>
+                    <div class="chart-stats-badge">Threshold: < 60mV (Excellent) | < 100mV (Normal)</div>
+                </div>
+                <div class="chart-canvas-box">
+                    <canvas id="chartCellDelta"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 3: CLIMATE & THERMAL -->
+    <div id="tab-climate" class="tab-content">
+        <div class="charts-container">
+            <!-- Chart 6: Temperatures & Humidity -->
+            <div class="chart-card full-width-chart">
+                <div class="chart-header">
+                    <div class="chart-title">🌡️ Climate & Thermal Profiles (°C & %RH)</div>
+                    <div class="chart-stats-badge">Cabinet, Battery & Modules 1-3</div>
+                </div>
+                <div class="chart-canvas-box tall">
+                    <canvas id="chartThermal"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 4: MODULES SHARING -->
+    <div id="tab-modules" class="tab-content">
+        <div class="charts-container">
+            <!-- Chart 7: Module Load Share Comparison -->
+            <div class="chart-card full-width-chart">
+                <div class="chart-header">
+                    <div class="chart-title">⚖️ Rectifier Module 1, 2, 3 Current Balance (Amperes)</div>
+                    <div class="chart-stats-badge">Parallel Active Load Sharing</div>
+                </div>
+                <div class="chart-canvas-box tall">
+                    <canvas id="chartModules"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 5: RAW DATA TABLE -->
+    <div id="tab-table" class="tab-content">
+        <div class="table-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+                <input type="text" id="tableSearch" placeholder="🔍 Search timestamp, voltage, or status..." 
+                    style="background: #0f172a; border: 1px solid var(--border); color: #fff; padding: 0.45rem 0.9rem; border-radius: 8px; font-size: 0.85rem; width: 280px;"
+                    onkeyup="renderTable()">
+                <div style="font-size: 0.82rem; color: var(--text-muted);" id="tableCountBadge">
+                    Showing 0 - 0 of 0 records
+                </div>
+            </div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>AC Volt (V)</th>
+                        <th>AC Cur (A)</th>
+                        <th>AC Power (kW)</th>
+                        <th>DC Volt (V)</th>
+                        <th>DC Cur (A)</th>
+                        <th>DC Power (W)</th>
+                        <th>Efficiency (%)</th>
+                        <th>SOC (%)</th>
+                        <th>SOH (%)</th>
+                        <th>Pack V</th>
+                        <th>ΔV (mV)</th>
+                        <th>Cab Temp (°C)</th>
+                        <th>Hum (%RH)</th>
+                        <th>Mod 1 (A)</th>
+                        <th>Mod 2 (A)</th>
+                        <th>Mod 3 (A)</th>
+                        <th>Alarms</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr><td colspan="18" style="text-align: center; color: var(--text-muted); padding: 2rem;">No data loaded.</td></tr>
+                </tbody>
+            </table>
+            <div class="pagination-bar">
+                <div>
+                    Page <span id="curPage">1</span> of <span id="totalPage">1</span>
+                </div>
+                <div style="display: flex; gap: 0.4rem;">
+                    <button class="filter-btn" onclick="changePage(-1)">◀ Prev</button>
+                    <button class="filter-btn" onclick="changePage(1)">Next ▶</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast">
+        <span id="toastIcon">✓</span> <span id="toastMsg">Notification</span>
+    </div>
+
+    <script>
+        // Global State
+        let rawRecords = [];      // All records parsed from current file
+        let filteredRecords = []; // Records after time filter applied
+        let chartInstances = {};  // Chart.js instances
+        let currentPage = 1;
+        const pageSize = 30;
+        let currentTimeFilter = 'all';
+        let availableDates = [];
+
+        // Colors for 15 individual battery cells
+        const CELL_COLORS = [
+            '#38bdf8', '#818cf8', '#c084fc', '#f43f5e', '#fb923c',
+            '#facc15', '#4ade80', '#2dd4bf', '#22d3ee', '#60a5fa',
+            '#a78bfa', '#e879f9', '#fb7185', '#34d399', '#a3e635'
+        ];
+
+        // Setup Drag & Drop Handlers
+        const dropzone = document.getElementById('dropzoneBox');
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropzone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                dropzone.classList.add('dragover');
+            }, false);
+        });
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropzone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                dropzone.classList.remove('dragover');
+            }, false);
+        });
+        dropzone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            if (files.length > 0) {
+                parseLocalCSVFile(files[0]);
+            }
+        });
+
+        // Show Toast Helper
+        function showToast(msg, icon = '✓') {
+            const t = document.getElementById('toast');
+            document.getElementById('toastMsg').innerText = msg;
+            document.getElementById('toastIcon').innerText = icon;
+            t.style.display = 'flex';
+            setTimeout(() => { t.style.display = 'none'; }, 3500);
+        }
+
+        // On Page Load: Check local HTTP API on port 8888
+        window.addEventListener('DOMContentLoaded', async () => {
+            await initDataSource();
+        });
+
+        async function initDataSource() {
+            const badge = document.getElementById('serverBadge');
+            const badgeText = document.getElementById('serverStatusText');
+            const dateSelect = document.getElementById('dateSelect');
+
+            try {
+                // Try fetching dates from local API
+                const resp = await fetch('http://localhost:8888/api/rectifier/dates', { cache: 'no-store' });
+                if (!resp.ok) throw new Error('API not available');
+                const dates = await resp.json();
+                availableDates = dates;
+
+                if (dates && dates.length > 0) {
+                    badge.classList.remove('offline');
+                    badgeText.innerText = 'Connected (Port 8888)';
+                    dateSelect.innerHTML = '';
+                    dates.forEach((d, idx) => {
+                        const opt = document.createElement('option');
+                        opt.value = d.date;
+                        opt.innerText = `${d.label} (${(d.size / 1024).toFixed(0)} KB)`;
+                        dateSelect.appendChild(opt);
+                    });
+
+                    // Select the latest date by default
+                    dateSelect.value = dates[0].date;
+                    await loadDataForDate(dates[0].date);
+                } else {
+                    throw new Error('No dates found in D:/Rectifier');
+                }
+            } catch (err) {
+                console.warn('Local API unavailable, fallback to offline file mode:', err.message);
+                badge.classList.add('offline');
+                badgeText.innerText = 'Offline / Direct File Mode';
+                dateSelect.innerHTML = '<option value="">Offline: Select File via Browse / Drop</option>';
+                showToast('Offline Mode: Drag & drop CSV from D:\\Rectifier', '📁');
+            }
+        }
+
+        // Handle Date Dropdown Change
+        async function onDateSelectChanged() {
+            const sel = document.getElementById('dateSelect');
+            if (sel.value) {
+                await loadDataForDate(sel.value);
+            }
+        }
+
+        // Load Data from API for specific date
+        async function loadDataForDate(dateStr) {
+            showToast(`Loading data for ${dateStr}...`, '⏳');
+            try {
+                const resp = await fetch(`http://localhost:8888/api/rectifier/data?date=${dateStr}`, { cache: 'no-store' });
+                if (!resp.ok) throw new Error(`HTTP error ${resp.status}`);
+                const text = await resp.text();
+                processRawCSVText(text, `rectifier_telemetry_${dateStr}.csv`);
+                showToast(`Loaded ${dateStr} successfully!`, '✓');
+            } catch (e) {
+                showToast(`Failed to load ${dateStr}: ${e.message}`, '✗');
+            }
+        }
+
+        // Handle File Picker Input
+        function onLocalFilePicked(e) {
+            const file = e.target.files[0];
+            if (file) {
+                parseLocalCSVFile(file);
+            }
+        }
+
+        // Read Local File via FileReader
+        function parseLocalCSVFile(file) {
+            showToast(`Reading ${file.name}...`, '⏳');
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const text = event.target.result;
+                processRawCSVText(text, file.name);
+                showToast(`Loaded ${file.name} (${rawRecords.length} records)`, '✓');
+            };
+            reader.onerror = () => {
+                showToast(`Error reading file: ${file.name}`, '✗');
+            };
+            reader.readAsText(file);
+        }
+
+        // Fast In-Browser CSV Parser
+        function processRawCSVText(csvText, filename) {
+            // Strip UTF-8 BOM if present
+            csvText = csvText.replace(/^\uFEFF/, '').trim();
+            const lines = csvText.split(/\r?\n/);
+            if (lines.length < 2) {
+                showToast('File contains no records!', '⚠️');
+                return;
+            }
+
+            const headerLine = lines[0];
+            const headers = headerLine.split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+            
+            const parsed = [];
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (!line) continue;
+                
+                // Parse CSV columns taking into account quoted strings
+                const cols = [];
+                let inQuotes = false;
+                let cur = '';
+                for (let j = 0; j < line.length; j++) {
+                    const c = line[j];
+                    if (c === '"') {
+                        inQuotes = !inQuotes;
+                    } else if (c === ',' && !inQuotes) {
+                        cols.push(cur.trim().replace(/^"|"$/g, ''));
+                        cur = '';
+                    } else {
+                        cur += c;
+                    }
+                }
+                cols.push(cur.trim().replace(/^"|"$/g, ''));
+
+                if (cols.length >= 35) {
+                    const rec = {
+                        timestamp: cols[0] || '',
+                        site_name: cols[1] || '',
+                        ip: cols[2] || '',
+                        uptime: cols[3] || '',
+                        ac_v: parseFloat(cols[4]) || 0,
+                        ac_i: parseFloat(cols[5]) || 0,
+                        ac_freq: parseFloat(cols[6]) || 0,
+                        ac_kw: parseFloat(cols[7]) || 0,
+                        ac_kwh: parseFloat(cols[8]) || 0,
+                        dc_v: parseFloat(cols[9]) || 0,
+                        dc_i: parseFloat(cols[10]) || 0,
+                        dc_w: parseFloat(cols[11]) || 0,
+                        efficiency: parseFloat(cols[12]) || 0,
+                        soc: parseFloat(cols[13]) || 0,
+                        soh: parseFloat(cols[14]) || 0,
+                        bat_v: parseFloat(cols[15]) || 0,
+                        bat_temp: parseFloat(cols[16]) || 0,
+                        cab_temp: parseFloat(cols[17]) || 0,
+                        cab_hum: parseFloat(cols[18]) || 0,
+                        alarms: parseInt(cols[19], 10) || 0,
+                        mod1_vin: parseFloat(cols[20]) || 0,
+                        mod1_vout: parseFloat(cols[21]) || 0,
+                        mod1_iout: parseFloat(cols[22]) || 0,
+                        mod1_w: parseFloat(cols[23]) || 0,
+                        mod1_t: parseFloat(cols[24]) || 0,
+                        mod2_vin: parseFloat(cols[25]) || 0,
+                        mod2_vout: parseFloat(cols[26]) || 0,
+                        mod2_iout: parseFloat(cols[27]) || 0,
+                        mod2_w: parseFloat(cols[28]) || 0,
+                        mod2_t: parseFloat(cols[29]) || 0,
+                        mod3_vin: parseFloat(cols[30]) || 0,
+                        mod3_vout: parseFloat(cols[31]) || 0,
+                        mod3_iout: parseFloat(cols[32]) || 0,
+                        mod3_w: parseFloat(cols[33]) || 0,
+                        mod3_t: parseFloat(cols[34]) || 0,
+                        cells: []
+                    };
+
+                    for (let c = 35; c <= 49; c++) {
+                        rec.cells.push(parseFloat(cols[c]) || 0);
+                    }
+                    if (rec.cells.length > 0) {
+                        rec.cell_max = Math.max(...rec.cells);
+                        rec.cell_min = Math.min(...rec.cells);
+                        rec.cell_delta_mv = Math.round((rec.cell_max - rec.cell_min) * 1000);
+                    } else {
+                        rec.cell_max = 0; rec.cell_min = 0; rec.cell_delta_mv = 0;
+                    }
+
+                    parsed.push(rec);
+                }
+            }
+
+            rawRecords = parsed;
+            applyTimeFilter(currentTimeFilter);
+        }
+
+        // Time Filter Selector
+        function setTimeFilter(filterName, btn) {
+            currentTimeFilter = filterName;
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+            applyTimeFilter(filterName);
+        }
+
+        function applyTimeFilter(filterName) {
+            if (!rawRecords || rawRecords.length === 0) return;
+
+            if (filterName === 'all') {
+                filteredRecords = rawRecords.slice();
+            } else if (filterName === 'night') {
+                filteredRecords = rawRecords.filter(r => {
+                    const h = extractHour(r.timestamp);
+                    return h >= 0 && h < 6;
+                });
+            } else if (filterName === 'morning') {
+                filteredRecords = rawRecords.filter(r => {
+                    const h = extractHour(r.timestamp);
+                    return h >= 6 && h < 12;
+                });
+            } else if (filterName === 'afternoon') {
+                filteredRecords = rawRecords.filter(r => {
+                    const h = extractHour(r.timestamp);
+                    return h >= 12 && h < 18;
+                });
+            } else if (filterName === 'evening') {
+                filteredRecords = rawRecords.filter(r => {
+                    const h = extractHour(r.timestamp);
+                    return h >= 18 && h <= 24;
+                });
+            } else if (filterName === 'last6h') {
+                filteredRecords = rawRecords.slice(-72); // ~6 hours if 5-min intervals
+            } else if (filterName === 'last1h') {
+                filteredRecords = rawRecords.slice(-12); // ~1 hour
+            }
+
+            updateDashboardUI();
+        }
+
+        function extractHour(ts) {
+            if (!ts) return 0;
+            const parts = ts.split(' ');
+            if (parts.length > 1) {
+                const timeParts = parts[1].split(':');
+                return parseInt(timeParts[0], 10) || 0;
+            }
+            return 0;
+        }
+
+        // Update All Dashboard Components
+        function updateDashboardUI() {
+            if (!filteredRecords || filteredRecords.length === 0) return;
+
+            updateKPIs();
+            renderAllCharts();
+            renderTable();
+
+            // Dataset info badge
+            const firstTs = filteredRecords[0].timestamp.split(' ')[1] || filteredRecords[0].timestamp;
+            const lastTs = filteredRecords[filteredRecords.length - 1].timestamp.split(' ')[1] || filteredRecords[filteredRecords.length - 1].timestamp;
+            document.getElementById('datasetInfo').innerHTML = 
+                `Displaying: <strong>${filteredRecords.length} records</strong> (from ${rawRecords.length}) | Period: <strong>${firstTs} — ${lastTs}</strong>`;
+        }
+
+        // Calculate and Render KPI Summary Cards
+        function updateKPIs() {
+            const data = filteredRecords;
+            const n = data.length;
+            if (n === 0) return;
+
+            let sumAcV = 0, minAcV = 999, maxAcV = 0;
+            let sumAcKw = 0, sumAcI = 0;
+            let sumDcV = 0, sumDcI = 0, maxDcI = 0, sumDcW = 0, maxDcW = 0;
+            let sumEff = 0, minEff = 999, maxEff = 0;
+            let sumCabT = 0, sumCabH = 0, sumBatT = 0;
+            let maxCellDelta = 0;
+            let sumM1 = 0, sumM2 = 0, sumM3 = 0;
+
+            data.forEach(r => {
+                sumAcV += r.ac_v;
+                minAcV = Math.min(minAcV, r.ac_v);
+                maxAcV = Math.max(maxAcV, r.ac_v);
+                sumAcKw += r.ac_kw;
+                sumAcI += r.ac_i;
+
+                sumDcV += r.dc_v;
+                sumDcI += r.dc_i;
+                maxDcI = Math.max(maxDcI, r.dc_i);
+                sumDcW += r.dc_w;
+                maxDcW = Math.max(maxDcW, r.dc_w);
+
+                sumEff += r.efficiency;
+                minEff = Math.min(minEff, r.efficiency);
+                maxEff = Math.max(maxEff, r.efficiency);
+
+                sumCabT += r.cab_temp;
+                sumCabH += r.cab_hum;
+                sumBatT += r.bat_temp;
+
+                maxCellDelta = Math.max(maxCellDelta, r.cell_delta_mv);
+
+                sumM1 += r.mod1_iout;
+                sumM2 += r.mod2_iout;
+                sumM3 += r.mod3_iout;
+            });
+
+            const lastRec = data[data.length - 1];
+
+            document.getElementById('kpi-ac-v').innerHTML = `${(sumAcV / n).toFixed(1)} <span style="font-size: 0.9rem; font-weight: 500;">V</span>`;
+            document.getElementById('kpi-ac-min').innerText = minAcV.toFixed(1);
+            document.getElementById('kpi-ac-max').innerText = maxAcV.toFixed(1);
+
+            document.getElementById('kpi-ac-kw').innerHTML = `${(sumAcKw / n).toFixed(2)} <span style="font-size: 0.9rem; font-weight: 500;">kW</span>`;
+            document.getElementById('kpi-ac-cur').innerText = `${(sumAcI / n).toFixed(2)} A`;
+            document.getElementById('kpi-ac-kwh').innerText = `${lastRec.ac_kwh.toLocaleString()} kWh`;
+
+            document.getElementById('kpi-dc-v').innerHTML = `${(sumDcV / n).toFixed(1)} <span style="font-size: 0.9rem; font-weight: 500;">V</span>`;
+            document.getElementById('kpi-dc-cur').innerText = `${(sumDcI / n).toFixed(2)} A (Peak: ${maxDcI.toFixed(1)}A)`;
+            document.getElementById('kpi-dc-p').innerText = `${Math.round(sumDcW / n)} W (Peak: ${maxDcW}W)`;
+
+            document.getElementById('kpi-eff').innerHTML = `${(sumEff / n).toFixed(1)} <span style="font-size: 0.9rem; font-weight: 500;">%</span>`;
+            document.getElementById('kpi-eff-min').innerText = `${minEff.toFixed(1)}%`;
+            document.getElementById('kpi-eff-max').innerText = `${maxEff.toFixed(1)}%`;
+
+            document.getElementById('kpi-bat-soh').innerHTML = `${lastRec.soh} <span style="font-size: 0.9rem; font-weight: 500;">% SOH</span>`;
+            document.getElementById('kpi-bat-soc').innerText = `${lastRec.soc}%`;
+            document.getElementById('kpi-bat-v').innerText = `${lastRec.bat_v.toFixed(1)} V`;
+
+            document.getElementById('kpi-cell-delta').innerHTML = `${maxCellDelta} <span style="font-size: 0.9rem; font-weight: 500;">mV</span>`;
+            const deltaStatus = maxCellDelta < 60 ? '🟢 Balance: Excellent (< 60mV)' : (maxCellDelta < 100 ? '🟡 Balance: Good (< 100mV)' : '🔴 Warning: High Spread (> 100mV)');
+            document.getElementById('kpi-cell-status').innerText = deltaStatus;
+
+            document.getElementById('kpi-cab-temp').innerHTML = `${(sumCabT / n).toFixed(1)} <span style="font-size: 0.9rem; font-weight: 500;">°C</span>`;
+            document.getElementById('kpi-cab-hum').innerText = `${(sumCabH / n).toFixed(1)} %RH`;
+            document.getElementById('kpi-bat-temp').innerText = `${(sumBatT / n).toFixed(1)} °C`;
+
+            const totalM = sumM1 + sumM2 + sumM3;
+            if (totalM > 0) {
+                const s1 = ((sumM1 / totalM) * 100).toFixed(1);
+                const s2 = ((sumM2 / totalM) * 100).toFixed(1);
+                const s3 = ((sumM3 / totalM) * 100).toFixed(1);
+                document.getElementById('kpi-mod-share').innerHTML = `${s1} / ${s2} / ${s3} <span style="font-size: 0.8rem;">%</span>`;
+                const maxDiff = Math.max(Math.abs(sumM1 - sumM2), Math.abs(sumM2 - sumM3), Math.abs(sumM1 - sumM3)) / n;
+                document.getElementById('kpi-mod-spread').innerText = `±${maxDiff.toFixed(2)} A (Balanced)`;
+            }
+        }
+
+        // Render All Charts with Chart.js
+        function renderAllCharts() {
+            const data = filteredRecords;
+            const labels = data.map(r => r.timestamp.split(' ')[1] || r.timestamp);
+
+            renderVoltageChart(labels, data);
+            renderCurrentChart(labels, data);
+            renderPowerChart(labels, data);
+            renderCellsChart(labels, data);
+            renderCellDeltaChart(labels, data);
+            renderThermalChart(labels, data);
+            renderModulesChart(labels, data);
+        }
+
+        // Chart 1: Voltage
+        function renderVoltageChart(labels, data) {
+            const ctx = document.getElementById('chartVoltage').getContext('2d');
+            if (chartInstances.voltage) chartInstances.voltage.destroy();
+
+            chartInstances.voltage = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [
+                        {
+                            label: 'AC Voltage (Phase A)',
+                            data: data.map(r => r.ac_v),
+                            borderColor: '#38bdf8',
+                            backgroundColor: 'rgba(56, 189, 248, 0.08)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.2,
+                            yAxisID: 'yAC'
+                        },
+                        {
+                            label: 'DC Bus Voltage',
+                            data: data.map(r => r.dc_v),
+                            borderColor: '#10b981',
+                            backgroundColor: 'transparent',
+                            borderWidth: 2.5,
+                            tension: 0.2,
+                            yAxisID: 'yDC'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: { labels: { color: '#94a3b8', font: { size: 11 } } },
+                        tooltip: { backgroundColor: 'rgba(15, 23, 42, 0.95)', titleColor: '#38bdf8' }
+                    },
+                    scales: {
+                        x: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#64748b', maxTicksLimit: 12 } },
+                        yAC: {
+                            type: 'linear',
+                            position: 'left',
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#38bdf8', callback: v => `${v}V` },
+                            title: { display: true, text: 'AC Volt (VAC)', color: '#38bdf8' }
+                        },
+                        yDC: {
+                            type: 'linear',
+                            position: 'right',
+                            grid: { drawOnChartArea: false },
+                            ticks: { color: '#10b981', callback: v => `${v}V` },
+                            title: { display: true, text: 'DC Volt (VDC)', color: '#10b981' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Chart 2: Current & Load Sharing
+        function renderCurrentChart(labels, data) {
+            const ctx = document.getElementById('chartCurrent').getContext('2d');
+            if (chartInstances.current) chartInstances.current.destroy();
+
+            chartInstances.current = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [
+                        {
+                            label: 'Total DC Load (A)',
+                            data: data.map(r => r.dc_i),
+                            borderColor: '#10b981',
+                            borderWidth: 2.5,
+                            tension: 0.2
+                        },
+                        {
+                            label: 'Mod 1 Output (A)',
+                            data: data.map(r => r.mod1_iout),
+                            borderColor: '#38bdf8',
+                            borderWidth: 1.5,
+                            borderDash: [4, 4],
+                            tension: 0.2
+                        },
+                        {
+                            label: 'Mod 2 Output (A)',
+                            data: data.map(r => r.mod2_iout),
+                            borderColor: '#818cf8',
+                            borderWidth: 1.5,
+                            borderDash: [4, 4],
+                            tension: 0.2
+                        },
+                        {
+                            label: 'Mod 3 Output (A)',
+                            data: data.map(r => r.mod3_iout),
+                            borderColor: '#c084fc',
+                            borderWidth: 1.5,
+                            borderDash: [4, 4],
+                            tension: 0.2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: { labels: { color: '#94a3b8', font: { size: 11 } } },
+                        tooltip: { backgroundColor: 'rgba(15, 23, 42, 0.95)' }
+                    },
+                    scales: {
+                        x: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#64748b', maxTicksLimit: 12 } },
+                        y: {
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#94a3b8', callback: v => `${v}A` },
+                            title: { display: true, text: 'Current (Amperes)', color: '#94a3b8' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Chart 3: Power & Efficiency
+        function renderPowerChart(labels, data) {
+            const ctx = document.getElementById('chartPower').getContext('2d');
+            if (chartInstances.power) chartInstances.power.destroy();
+
+            chartInstances.power = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [
+                        {
+                            label: 'AC Active Power (kW)',
+                            data: data.map(r => r.ac_kw),
+                            borderColor: '#38bdf8',
+                            backgroundColor: 'rgba(56, 189, 248, 0.08)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.2,
+                            yAxisID: 'yPower'
+                        },
+                        {
+                            label: 'DC Output Power (kW)',
+                            data: data.map(r => (r.dc_w / 1000)),
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.08)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.2,
+                            yAxisID: 'yPower'
+                        },
+                        {
+                            label: 'System Efficiency (%)',
+                            data: data.map(r => r.efficiency),
+                            borderColor: '#c084fc',
+                            borderWidth: 2.5,
+                            borderDash: [5, 4],
+                            tension: 0.2,
+                            yAxisID: 'yEff'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: { labels: { color: '#94a3b8' } },
+                        tooltip: { backgroundColor: 'rgba(15, 23, 42, 0.95)' }
+                    },
+                    scales: {
+                        x: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#64748b', maxTicksLimit: 14 } },
+                        yPower: {
+                            type: 'linear',
+                            position: 'left',
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#38bdf8', callback: v => `${v.toFixed(1)} kW` },
+                            title: { display: true, text: 'Power (kW)', color: '#38bdf8' }
+                        },
+                        yEff: {
+                            type: 'linear',
+                            position: 'right',
+                            min: 85,
+                            max: 100,
+                            grid: { drawOnChartArea: false },
+                            ticks: { color: '#c084fc', callback: v => `${v}%` },
+                            title: { display: true, text: 'Efficiency (%)', color: '#c084fc' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Chart 4: 15-Cell Individual Voltages
+        function renderCellsChart(labels, data) {
+            const ctx = document.getElementById('chartCells').getContext('2d');
+            if (chartInstances.cells) chartInstances.cells.destroy();
+
+            const datasets = [];
+            for (let c = 0; c < 15; c++) {
+                datasets.push({
+                    label: `Cell ${c + 1}`,
+                    data: data.map(r => (r.cells[c] || 0)),
+                    borderColor: CELL_COLORS[c],
+                    borderWidth: 1.6,
+                    tension: 0.1,
+                    pointRadius: 0
+                });
+            }
+
+            chartInstances.cells = new Chart(ctx, {
+                type: 'line',
+                data: { labels, datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: { color: '#94a3b8', boxWidth: 12, padding: 10, font: { size: 10 } }
+                        },
+                        tooltip: { backgroundColor: 'rgba(15, 23, 42, 0.95)' }
+                    },
+                    scales: {
+                        x: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#64748b', maxTicksLimit: 14 } },
+                        y: {
+                            min: 3.25,
+                            max: 3.50,
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#38bdf8', callback: v => `${v.toFixed(2)}V` },
+                            title: { display: true, text: 'Cell Voltage (V)', color: '#38bdf8' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Chart 5: Cell Delta Spread (ΔV mV)
+        function renderCellDeltaChart(labels, data) {
+            const ctx = document.getElementById('chartCellDelta').getContext('2d');
+            if (chartInstances.cellDelta) chartInstances.cellDelta.destroy();
+
+            chartInstances.cellDelta = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [
+                        {
+                            label: 'Cell Voltage Spread ΔV (mV)',
+                            data: data.map(r => r.cell_delta_mv),
+                            borderColor: '#f43f5e',
+                            backgroundColor: 'rgba(244, 63, 94, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: { labels: { color: '#f43f5e' } },
+                        tooltip: { backgroundColor: 'rgba(15, 23, 42, 0.95)' }
+                    },
+                    scales: {
+                        x: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#64748b', maxTicksLimit: 14 } },
+                        y: {
+                            min: 0,
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#f43f5e', callback: v => `${v} mV` },
+                            title: { display: true, text: 'Spread Delta (mV)', color: '#f43f5e' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Chart 6: Thermal Trends
+        function renderThermalChart(labels, data) {
+            const ctx = document.getElementById('chartThermal').getContext('2d');
+            if (chartInstances.thermal) chartInstances.thermal.destroy();
+
+            chartInstances.thermal = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [
+                        {
+                            label: 'Cabinet Temp (°C)',
+                            data: data.map(r => r.cab_temp),
+                            borderColor: '#38bdf8',
+                            borderWidth: 2,
+                            tension: 0.2,
+                            yAxisID: 'yTemp'
+                        },
+                        {
+                            label: 'Battery Pack Temp (°C)',
+                            data: data.map(r => r.bat_temp),
+                            borderColor: '#10b981',
+                            borderWidth: 2,
+                            tension: 0.2,
+                            yAxisID: 'yTemp'
+                        },
+                        {
+                            label: 'Mod 1 Temp (°C)',
+                            data: data.map(r => r.mod1_t),
+                            borderColor: '#fb923c',
+                            borderWidth: 1.5,
+                            borderDash: [4, 4],
+                            tension: 0.2,
+                            yAxisID: 'yTemp'
+                        },
+                        {
+                            label: 'Mod 2 Temp (°C)',
+                            data: data.map(r => r.mod2_t),
+                            borderColor: '#f43f5e',
+                            borderWidth: 1.5,
+                            borderDash: [4, 4],
+                            tension: 0.2,
+                            yAxisID: 'yTemp'
+                        },
+                        {
+                            label: 'Mod 3 Temp (°C)',
+                            data: data.map(r => r.mod3_t),
+                            borderColor: '#c084fc',
+                            borderWidth: 1.5,
+                            borderDash: [4, 4],
+                            tension: 0.2,
+                            yAxisID: 'yTemp'
+                        },
+                        {
+                            label: 'Cabinet Humidity (%RH)',
+                            data: data.map(r => r.cab_hum),
+                            borderColor: '#818cf8',
+                            borderWidth: 1.8,
+                            tension: 0.2,
+                            yAxisID: 'yHum'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: { labels: { color: '#94a3b8' } },
+                        tooltip: { backgroundColor: 'rgba(15, 23, 42, 0.95)' }
+                    },
+                    scales: {
+                        x: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#64748b', maxTicksLimit: 14 } },
+                        yTemp: {
+                            type: 'linear',
+                            position: 'left',
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#38bdf8', callback: v => `${v}°C` },
+                            title: { display: true, text: 'Temperature (°C)', color: '#38bdf8' }
+                        },
+                        yHum: {
+                            type: 'linear',
+                            position: 'right',
+                            grid: { drawOnChartArea: false },
+                            ticks: { color: '#818cf8', callback: v => `${v}%` },
+                            title: { display: true, text: 'Humidity (%RH)', color: '#818cf8' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Chart 7: Modules Sharing
+        function renderModulesChart(labels, data) {
+            const ctx = document.getElementById('chartModules').getContext('2d');
+            if (chartInstances.modules) chartInstances.modules.destroy();
+
+            chartInstances.modules = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [
+                        {
+                            label: 'Module #1 Current (A)',
+                            data: data.map(r => r.mod1_iout),
+                            borderColor: '#38bdf8',
+                            backgroundColor: 'rgba(56, 189, 248, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.2
+                        },
+                        {
+                            label: 'Module #2 Current (A)',
+                            data: data.map(r => r.mod2_iout),
+                            borderColor: '#818cf8',
+                            backgroundColor: 'rgba(129, 140, 248, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.2
+                        },
+                        {
+                            label: 'Module #3 Current (A)',
+                            data: data.map(r => r.mod3_iout),
+                            borderColor: '#c084fc',
+                            backgroundColor: 'rgba(192, 132, 252, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: { labels: { color: '#94a3b8' } },
+                        tooltip: { backgroundColor: 'rgba(15, 23, 42, 0.95)' }
+                    },
+                    scales: {
+                        x: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#64748b', maxTicksLimit: 14 } },
+                        y: {
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#94a3b8', callback: v => `${v}A` },
+                            title: { display: true, text: 'Module Current (Amperes)', color: '#94a3b8' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Render Data Table with Search and Pagination
+        function renderTable() {
+            const query = (document.getElementById('tableSearch').value || '').toLowerCase();
+            let data = filteredRecords;
+
+            if (query) {
+                data = data.filter(r => 
+                    r.timestamp.toLowerCase().includes(query) ||
+                    r.ac_v.toString().includes(query) ||
+                    r.dc_v.toString().includes(query) ||
+                    r.dc_i.toString().includes(query)
+                );
+            }
+
+            const total = data.length;
+            const totalPages = Math.max(1, Math.ceil(total / pageSize));
+            if (currentPage > totalPages) currentPage = totalPages;
+
+            document.getElementById('curPage').innerText = currentPage;
+            document.getElementById('totalPage').innerText = totalPages;
+
+            const startIdx = (currentPage - 1) * pageSize;
+            const endIdx = Math.min(startIdx + pageSize, total);
+            document.getElementById('tableCountBadge').innerText = `Showing ${total > 0 ? startIdx + 1 : 0} - ${endIdx} of ${total} records`;
+
+            const pageRows = data.slice(startIdx, endIdx);
+            const tbody = document.getElementById('tableBody');
+
+            if (pageRows.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="18" style="text-align: center; color: var(--text-muted); padding: 2rem;">No matching records found.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = pageRows.map(r => `
+                <tr>
+                    <td><strong>${r.timestamp}</strong></td>
+                    <td style="color: #38bdf8;">${r.ac_v.toFixed(1)}</td>
+                    <td>${r.ac_i.toFixed(2)}</td>
+                    <td>${r.ac_kw.toFixed(2)}</td>
+                    <td style="color: #10b981; font-weight: 600;">${r.dc_v.toFixed(1)}</td>
+                    <td style="color: #34d399;">${r.dc_i.toFixed(2)}</td>
+                    <td>${r.dc_w}</td>
+                    <td style="color: #c084fc;">${r.efficiency.toFixed(1)}%</td>
+                    <td>${r.soc}%</td>
+                    <td>${r.soh}%</td>
+                    <td>${r.bat_v.toFixed(1)}</td>
+                    <td style="color: ${r.cell_delta_mv < 60 ? '#34d399' : '#f59e0b'}; font-weight: 600;">${r.cell_delta_mv} mV</td>
+                    <td>${r.cab_temp.toFixed(1)}</td>
+                    <td>${r.cab_hum.toFixed(1)}%</td>
+                    <td>${r.mod1_iout.toFixed(2)}</td>
+                    <td>${r.mod2_iout.toFixed(2)}</td>
+                    <td>${r.mod3_iout.toFixed(2)}</td>
+                    <td><span style="color: ${r.alarms === 0 ? '#34d399' : '#f43f5e'};">${r.alarms === 0 ? '✓ Normal' : '⚠️ ' + r.alarms}</span></td>
+                </tr>
+            `).join('');
+        }
+
+        function changePage(delta) {
+            currentPage += delta;
+            if (currentPage < 1) currentPage = 1;
+            renderTable();
+        }
+
+        // Tab Switching
+        function switchTab(tabId, btn) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+            const target = document.getElementById(tabId);
+            if (target) target.classList.add('active');
+
+            // Force Chart.js resize on tab switch to avoid 0x0 canvas
+            setTimeout(() => {
+                Object.values(chartInstances).forEach(chart => {
+                    if (chart && typeof chart.resize === 'function') {
+                        chart.resize();
+                    }
+                });
+            }, 50);
+        }
+
+        // Export Filtered Records as CSV
+        function exportFilteredCSV() {
+            if (!filteredRecords || filteredRecords.length === 0) {
+                showToast('No records to export!', '⚠️');
+                return;
+            }
+
+            const keys = [
+                'timestamp', 'ac_v', 'ac_i', 'ac_freq', 'ac_kw', 'ac_kwh',
+                'dc_v', 'dc_i', 'dc_w', 'efficiency', 'soc', 'soh', 'bat_v',
+                'cell_delta_mv', 'bat_temp', 'cab_temp', 'cab_hum', 'alarms',
+                'mod1_iout', 'mod2_iout', 'mod3_iout'
+            ];
+
+            let csvContent = 'data:text/csv;charset=utf-8,\uFEFF' + keys.join(',') + '\n';
+            filteredRecords.forEach(r => {
+                const row = keys.map(k => {
+                    const val = r[k];
+                    return typeof val === 'string' ? `"${val}"` : val;
+                });
+                csvContent += row.join(',') + '\n';
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement('a');
+            link.setAttribute('href', encodedUri);
+            link.setAttribute('download', `rectifier_filtered_${new Date().toISOString().slice(0, 10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast('Exported CSV successfully!', '✓');
+        }
+    </script>
+</body>
+</html>
