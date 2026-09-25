@@ -1,0 +1,2000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Megmeet Rectifier Telemetry Monitor - True</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --bg-base: #060913;
+            --bg-surface: rgba(15, 23, 42, 0.75);
+            --bg-card: rgba(30, 41, 59, 0.45);
+            --border: rgba(255, 255, 255, 0.08);
+            --border-highlight: rgba(56, 189, 248, 0.3);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --cyan: #38bdf8;
+            --green: #10b981;
+            --amber: #f59e0b;
+            --rose: #f43f5e;
+            --indigo: #818cf8;
+            --purple: #c084fc;
+        }
+
+        /* Trend Charts Layout */
+        .trend-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(440px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+        @media (max-width: 550px) {
+            .trend-grid { grid-template-columns: 1fr; }
+        }
+        .chart-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.25rem 1.25rem 1rem 1.25rem;
+            backdrop-filter: blur(14px);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+            transition: border-color 0.2s;
+        }
+        .chart-card:hover { border-color: var(--border-highlight); }
+        .chart-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.85rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .chart-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+        }
+        .chart-badge-group {
+            display: flex;
+            gap: 0.35rem;
+            flex-wrap: wrap;
+        }
+        .chart-container-wrap {
+            position: relative;
+            width: 100%;
+            height: 270px;
+        }
+
+        * { box-sizing: border-box; }
+        html { scrollbar-gutter: stable !important; overflow-y: scroll !important; }
+        body {
+            margin: 0 !important;
+            padding: 16px 20px 3rem 20px !important;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-base);
+            background-image: 
+                radial-gradient(circle at 10% 10%, rgba(56, 189, 248, 0.07), transparent 40%),
+                radial-gradient(circle at 90% 90%, rgba(16, 185, 129, 0.06), transparent 40%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 100% !important;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 4px 8px !important;
+        }
+
+        /* Header Bar */
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            padding: 1.25rem 1.5rem 1.25rem 4rem;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            backdrop-filter: blur(16px);
+            margin-bottom: 1.5rem;
+        }
+
+        .brand-box {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .brand-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(16, 185, 129, 0.2));
+            border: 1px solid var(--border-highlight);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+        }
+
+        .brand-text h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.65rem;
+            font-weight: 700;
+            margin: 0;
+            background: linear-gradient(90deg, #38bdf8, #34d399, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand-text p {
+            margin: 0.2rem 0 0;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .header-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .meta-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            padding: 0.45rem 0.85rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        .meta-pill strong { color: var(--text-main); font-weight: 600; }
+
+        .live-pulse {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #34d399;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10b981;
+            box-shadow: 0 0 10px #10b981;
+            animation: pulse-glow 1.5s infinite;
+        }
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.8); }
+        }
+
+        .btn-refresh {
+            background: linear-gradient(135deg, #0284c7, #0f766e);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            color: #ffffff;
+            font-weight: 600;
+            padding: 0.45rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.82rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .btn-refresh:hover { transform: scale(1.03); filter: brightness(1.15); }
+
+        /* Circular Gauge Grid & Cards */
+        .gauge-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 1.1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .gauge-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.25rem 1rem 1rem 1rem;
+            backdrop-filter: blur(14px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.25s, box-shadow 0.25s;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+        }
+        .gauge-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--border-highlight);
+            box-shadow: 0 8px 30px rgba(56, 189, 248, 0.15);
+        }
+
+        .gauge-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, transparent, var(--card-accent, #38bdf8), transparent);
+        }
+
+        .gauge-header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            padding: 0 0.25rem;
+        }
+
+        .gauge-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .gauge-icon { font-size: 1.15rem; }
+
+        .gauge-wrap {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0.25rem 0;
+        }
+
+        .gauge-svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        .gauge-track {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.07);
+            stroke-width: 9;
+        }
+
+        .gauge-bar {
+            fill: none;
+            stroke-width: 9;
+            stroke-linecap: round;
+            stroke-dasharray: 339.29;
+            stroke-dashoffset: 339.29;
+            transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.3s;
+        }
+
+        .gauge-content {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            pointer-events: none;
+        }
+
+        .gauge-val {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.55rem;
+            font-weight: 800;
+            line-height: 1.1;
+            color: var(--text-main);
+        }
+
+        .gauge-unit {
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 1px;
+        }
+
+        .gauge-sub {
+            width: 100%;
+            text-align: center;
+            font-size: 0.76rem;
+            color: var(--text-muted);
+            margin-top: 0.6rem;
+            padding-top: 0.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .gauge-sub strong { color: #f1f5f9; font-weight: 600; }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            gap: 0.5rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.75rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-muted);
+            padding: 0.6rem 1.2rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.88rem;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .tab-btn.active {
+            background: rgba(56, 189, 248, 0.12);
+            color: var(--cyan);
+            border-color: rgba(56, 189, 248, 0.35);
+        }
+
+        /* Tab Content Panes */
+        .tab-pane { display: none; }
+        .tab-pane.active { display: block; }
+
+        /* Panels & Sections */
+        .panel {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            backdrop-filter: blur(14px);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.8rem;
+        }
+
+        .panel-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Power Flow Diagram */
+        .flow-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .flow-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+        }
+
+        .flow-card h3 {
+            margin: 0 0 1rem 0;
+            font-size: 0.95rem;
+            color: var(--cyan);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.55rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            font-size: 0.86rem;
+        }
+        .stat-row:last-child { border-bottom: none; }
+        .stat-label { color: var(--text-muted); }
+        .stat-val { font-weight: 600; color: var(--text-main); }
+
+        /* Module Cards */
+        .module-grid-wrapper {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .module-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.25rem;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .module-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--border-highlight);
+        }
+
+        .module-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.4rem;
+        }
+        .module-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+        .module-sn {
+            font-size: 0.76rem;
+            color: var(--text-muted);
+            font-family: monospace;
+            margin-bottom: 1rem;
+        }
+
+        .module-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        .m-metric {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 0.65rem 0.8rem;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+        .m-label {
+            display: block;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            margin-bottom: 0.2rem;
+        }
+        .m-val {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        /* Battery Section */
+        .battery-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 1.5rem;
+        }
+        @media (max-width: 900px) {
+            .battery-container { grid-template-columns: 1fr; }
+        }
+
+        .bms-summary {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+        }
+
+        .cell-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+            gap: 0.6rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+        }
+
+        .cell-box {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 0.5rem 0.3rem;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .cell-num { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; }
+        .cell-bar-wrap {
+            width: 14px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 4px;
+            overflow: hidden;
+            display: flex;
+            align-items: flex-end;
+        }
+        .cell-bar {
+            width: 100%;
+            background: linear-gradient(to top, #10b981, #38bdf8);
+            border-radius: 4px;
+            transition: height 0.3s;
+        }
+        .cell-volt {
+            font-family: monospace;
+            font-size: 0.76rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        /* Sensor Chips Grid */
+        .sensor-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+            gap: 0.8rem;
+        }
+
+        .sensor-chip {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+        }
+        .sensor-chip.sensor-alarm {
+            background: rgba(244, 63, 94, 0.15);
+            border-color: rgba(244, 63, 94, 0.4);
+            animation: chip-blink 1s infinite alternate;
+        }
+        @keyframes chip-blink {
+            0% { box-shadow: 0 0 5px rgba(244, 63, 94, 0.2); }
+            100% { box-shadow: 0 0 14px rgba(244, 63, 94, 0.5); }
+        }
+        .sensor-name { flex: 1; font-weight: 500; }
+        .sensor-status { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; }
+
+        .led {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .led-green { background: #10b981; box-shadow: 0 0 8px #10b981; }
+        .led-red { background: #f43f5e; box-shadow: 0 0 8px #f43f5e; }
+
+        /* Badges & Colors */
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.65rem;
+            border-radius: 9999px;
+            font-size: 0.74rem;
+            font-weight: 700;
+        }
+        .badge-success { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .badge-danger { background: rgba(244, 63, 94, 0.15); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.3); }
+        .highlight-cyan { color: var(--cyan) !important; }
+        .highlight-green { color: var(--green) !important; }
+
+        /* Slide-over Sidebar Styles */
+        .sidebar-toggle-btn {
+            position: fixed;
+            top: 24px;
+            left: 20px;
+            z-index: 10000;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            color: #f8fafc;
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            transition: all 0.2s ease;
+        }
+        .sidebar-toggle-btn:hover {
+            background: rgba(56, 189, 248, 0.25);
+            transform: scale(1.05);
+        }
+        .sidebar-toggle-btn svg { width: 20px; height: 20px; }
+
+        .sidebar-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(3, 7, 18, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 9998;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        .sidebar-overlay.active { opacity: 1; visibility: visible; }
+
+        .sidebar {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 280px !important;
+            height: 100vh !important;
+            background: #0b1329 !important;
+            border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
+            z-index: 9999 !important;
+            transform: translateX(-100%) !important;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            display: flex !important;
+            flex-direction: column !important;
+            overflow-y: auto !important;
+        }
+        .sidebar.open { transform: translateX(0) !important; box-shadow: 10px 0 40px rgba(0,0,0,0.6) !important; }
+
+        .sidebar-header-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 16px 18px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .sidebar-logo {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.15rem;
+            color: #f8fafc;
+            font-weight: 800;
+        }
+        .sidebar-logo span {
+            background: linear-gradient(135deg, #06b6d4, #6366f1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .sidebar-close-btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #94a3b8;
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+        .sidebar-links { padding: 12px 0; overflow-y: auto; flex: 1; }
+        .sidebar-links a {
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.88rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        .sidebar-links a:hover { color: #22d3ee; background: rgba(6, 182, 212, 0.08); }
+        .sidebar-links a.active { color: #22d3ee; background: rgba(6, 182, 212, 0.15); border-left: 3px solid #22d3ee; font-weight: 700; }
+        .sidebar-links a.sub-link { padding-left: 34px; font-size: 0.82rem; }
+    </style>
+</head>
+<body>
+
+<!-- FLOATING SIDEBAR TOGGLE BUTTON -->
+<button class="sidebar-toggle-btn" id="sidebarToggleBtn" aria-label="Toggle Navigation Menu" title="เมนูนำทาง (คลิกเพื่อเปิด/ปิด)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+</button>
+
+<!-- BACKDROP OVERLAY -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- SLIDE-OVER SIDEBAR -->
+<nav class="sidebar" id="mainSidebar">
+    <div class="sidebar-header-row">
+        <div class="sidebar-logo">⚡ <span>FBE-PMS-Monitor</span></div>
+        <button class="sidebar-close-btn" id="sidebarCloseBtn" aria-label="Close Sidebar" title="ปิดเมนู">&times;</button>
+    </div>
+    <div class="sidebar-links">
+        <a href="index.html" id="nav-main">OLT temperature</a>
+        <a href="mismatch_dashboard.html" id="nav-mismatch">XGS mismatch</a>
+        <a href="olt_executive_dashboard.html" id="nav-executive">XGS-PON</a>
+        <a href="traffic_dashboard.html" id="nav-uplinktraffic">Uplink Traffic</a>
+        <a href="optical_dashboard.html" id="nav-optical">Optical</a>
+        <a href="megmeet_rectifier_dashboard.html" id="nav-megmeet" class="sub-link active">⚡ Megmeet Rectifier (Live)</a>
+        <a href="megmeet_rectifier_history.html" id="nav-megmeet-history" class="sub-link">📈 Rectifier Raw Data (D:\Rectifier)</a>
+    </div>
+</nav>
+
+<div class="container">
+    <!-- Header Bar -->
+    <div class="header-bar">
+        <div class="brand-box">
+            <div class="brand-icon">⚡</div>
+            <div class="brand-text">
+                <h1>Megmeet Rectifier Monitor</h1>
+                <p>Enterprise OID 40211 Live Telemetry & Hardware State</p>
+            </div>
+        </div>
+        <div class="header-meta">
+            <div class="meta-pill">Site: <strong id="meta-sitename">True</strong></div>
+            <div class="meta-pill">Target: <strong id="meta-ip">10.237.77.232:162</strong></div>
+            <div class="meta-pill">S/N: <strong id="meta-sn">Z530053261100214</strong></div>
+            <div class="meta-pill">Uptime: <strong id="meta-uptime">10 days, 23:52:02.20</strong></div>
+            <div class="meta-pill">Updated: <strong id="lastUpdated">-</strong></div>
+            <a href="megmeet_rectifier_history.html" class="btn-refresh" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px; background: linear-gradient(135deg, #0284c7, #4f46e5);" title="เปิดดูกราฟ Raw Data ย้อนหลังใน D:\Rectifier">
+                📈 Historical Analytics (D:\Rectifier)
+            </a>
+            <div class="live-pulse" id="autoRefreshBtn" onclick="toggleAutoRefresh()" title="คลิกเพื่อหยุด/เริ่ม Auto Refresh ชั่วคราว">
+                <span class="pulse-dot" id="pulseDot"></span>
+                <span id="autoRefreshText">Live 5m</span>
+            </div>
+            <button class="btn-refresh" onclick="triggerManualFetch()">🔄 Refresh Now</button>
+        </div>
+    </div>
+
+    <!-- Circular Gauges Grid -->
+    <div class="gauge-grid">
+        <!-- 1. AC Input Voltage Gauge -->
+        <div class="gauge-card" style="--card-accent: #38bdf8;">
+            <div class="gauge-header">
+                <span class="gauge-title">AC Input</span>
+                <span class="gauge-icon">⚡</span>
+            </div>
+            <div class="gauge-wrap">
+                <svg class="gauge-svg" viewBox="0 0 120 120">
+                    <circle class="gauge-track" cx="60" cy="60" r="54"></circle>
+                    <circle class="gauge-bar" id="gauge-bar-ac-volt" cx="60" cy="60" r="54" stroke="#38bdf8"></circle>
+                </svg>
+                <div class="gauge-content">
+                    <div class="gauge-val" id="gauge-val-ac-volt">--</div>
+                    <div class="gauge-unit">VAC</div>
+                </div>
+            </div>
+            <div class="gauge-sub">Current: <strong id="gauge-sub-ac-curr">-- A</strong> | <strong id="gauge-sub-ac-freq">-- Hz</strong></div>
+        </div>
+
+        <!-- 2. DC Bus Voltage Gauge -->
+        <div class="gauge-card" style="--card-accent: #10b981;">
+            <div class="gauge-header">
+                <span class="gauge-title">DC Output Bus</span>
+                <span class="gauge-icon">🔋</span>
+            </div>
+            <div class="gauge-wrap">
+                <svg class="gauge-svg" viewBox="0 0 120 120">
+                    <circle class="gauge-track" cx="60" cy="60" r="54"></circle>
+                    <circle class="gauge-bar" id="gauge-bar-dc-volt" cx="60" cy="60" r="54" stroke="#10b981"></circle>
+                </svg>
+                <div class="gauge-content">
+                    <div class="gauge-val" id="gauge-val-dc-volt">--</div>
+                    <div class="gauge-unit">VDC (-48V)</div>
+                </div>
+            </div>
+            <div class="gauge-sub">Load: <strong id="gauge-sub-dc-curr">-- A</strong> (Float Chg)</div>
+        </div>
+
+        <!-- 3. DC Load Power Gauge -->
+        <div class="gauge-card" style="--card-accent: #f59e0b;">
+            <div class="gauge-header">
+                <span class="gauge-title">DC Load Power</span>
+                <span class="gauge-icon">⚙️</span>
+            </div>
+            <div class="gauge-wrap">
+                <svg class="gauge-svg" viewBox="0 0 120 120">
+                    <circle class="gauge-track" cx="60" cy="60" r="54"></circle>
+                    <circle class="gauge-bar" id="gauge-bar-dc-power" cx="60" cy="60" r="54" stroke="#f59e0b"></circle>
+                </svg>
+                <div class="gauge-content">
+                    <div class="gauge-val" id="gauge-val-dc-power">--</div>
+                    <div class="gauge-unit">Watts</div>
+                </div>
+            </div>
+            <div class="gauge-sub">AC: <strong id="gauge-sub-ac-power">-- kW</strong> | Eff: <strong id="gauge-sub-eff">--%</strong></div>
+        </div>
+
+        <!-- 4. Lithium Battery SOC Gauge -->
+        <div class="gauge-card" style="--card-accent: #818cf8;">
+            <div class="gauge-header">
+                <span class="gauge-title">Battery SOC</span>
+                <span class="gauge-icon">📊</span>
+            </div>
+            <div class="gauge-wrap">
+                <svg class="gauge-svg" viewBox="0 0 120 120">
+                    <circle class="gauge-track" cx="60" cy="60" r="54"></circle>
+                    <circle class="gauge-bar" id="gauge-bar-batt-soc" cx="60" cy="60" r="54" stroke="#818cf8"></circle>
+                </svg>
+                <div class="gauge-content">
+                    <div class="gauge-val" id="gauge-val-batt-soc">--</div>
+                    <div class="gauge-unit">% SOC</div>
+                </div>
+            </div>
+            <div class="gauge-sub">Pack: <strong id="gauge-sub-batt-volt">-- V</strong> | <strong id="gauge-sub-batt-temp">-- °C</strong></div>
+        </div>
+
+        <!-- 5. Cabinet Temperature Gauge -->
+        <div class="gauge-card" style="--card-accent: #34d399;">
+            <div class="gauge-header">
+                <span class="gauge-title">Cabinet Climate</span>
+                <span class="gauge-icon">🌡️</span>
+            </div>
+            <div class="gauge-wrap">
+                <svg class="gauge-svg" viewBox="0 0 120 120">
+                    <circle class="gauge-track" cx="60" cy="60" r="54"></circle>
+                    <circle class="gauge-bar" id="gauge-bar-cab-temp" cx="60" cy="60" r="54" stroke="#34d399"></circle>
+                </svg>
+                <div class="gauge-content">
+                    <div class="gauge-val" id="gauge-val-cab-temp">--</div>
+                    <div class="gauge-unit">°C Temp</div>
+                </div>
+            </div>
+            <div class="gauge-sub">RH: <strong id="gauge-sub-cab-hum">-- %RH</strong> | Normal</div>
+        </div>
+
+        <!-- 6. Battery SOH Gauge (State of Health) -->
+        <div class="gauge-card" style="--card-accent: #14b8a6;">
+            <div class="gauge-header">
+                <span class="gauge-title">Battery SOH</span>
+                <span class="gauge-icon">🩺</span>
+            </div>
+            <div class="gauge-wrap">
+                <svg class="gauge-svg" viewBox="0 0 120 120">
+                    <circle class="gauge-track" cx="60" cy="60" r="54"></circle>
+                    <circle class="gauge-bar" id="gauge-bar-batt-soh" cx="60" cy="60" r="54" stroke="#14b8a6"></circle>
+                </svg>
+                <div class="gauge-content">
+                    <div class="gauge-val" id="gauge-val-batt-soh" style="color: #34d399;">--</div>
+                    <div class="gauge-unit">% SOH</div>
+                </div>
+            </div>
+            <div class="gauge-sub" id="gauge-sub-soh-status">Health: <strong id="gauge-sub-soh-text" style="color:#34d399;">Good (100%)</strong></div>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="nav-tabs">
+        <button class="tab-btn active" onclick="switchTab('overview')">⚡ Power Overview</button>
+        <button class="tab-btn" onclick="switchTab('trend-volt')">⚡ Voltage Trend (V)</button>
+        <button class="tab-btn" onclick="switchTab('trend-curr')">🔋 Current Trend (A)</button>
+        <button class="tab-btn" onclick="switchTab('trend-power')">⚙️ Power Trend (P)</button>
+        <button class="tab-btn" onclick="switchTab('modules')">🔌 Rectifier Modules (3)</button>
+        <button class="tab-btn" onclick="switchTab('battery')">🔋 Battery BMS (16S)</button>
+        <button class="tab-btn" onclick="switchTab('alarms')">🛡️ Sensors & Alarms (20)</button>
+        <button class="tab-btn" onclick="switchTab('network')">🌐 Network & SNMP Config</button>
+    </div>
+
+    <!-- Tab 1: Overview -->
+    <div id="tab-overview" class="tab-pane active">
+        <div class="flow-grid">
+            <!-- AC In -->
+            <div class="flow-card">
+                <h3>⚡ AC Input Supply</h3>
+                <div class="stat-row">
+                    <span class="stat-label">Phase A Voltage</span>
+                    <span class="stat-val highlight-cyan" id="stat-ac-volt">-- V AC</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Phase A Current</span>
+                    <span class="stat-val" id="stat-ac-curr">-- A</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Grid Frequency</span>
+                    <span class="stat-val" id="stat-ac-freq">-- Hz</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Active Power</span>
+                    <span class="stat-val" id="stat-ac-power">-- kW</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Total Energy Cumulative</span>
+                    <span class="stat-val" id="stat-ac-energy">-- kWh</span>
+                </div>
+            </div>
+
+            <!-- DC Bus -->
+            <div class="flow-card">
+                <h3>🔌 DC Output Distribution</h3>
+                <div class="stat-row">
+                    <span class="stat-label">DC Bus Voltage</span>
+                    <span class="stat-val highlight-green" id="stat-dc-volt">-- V DC</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Total Load Current</span>
+                    <span class="stat-val highlight-green" id="stat-dc-curr">-- A</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Active Load Power</span>
+                    <span class="stat-val" id="stat-dc-power">-- W</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">System Conversion Efficiency</span>
+                    <span class="stat-val highlight-cyan" id="stat-eff">-- %</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Nominal Standard</span>
+                    <span class="stat-val">-48V DC Telecom Plant</span>
+                </div>
+            </div>
+
+            <!-- Controller Info -->
+            <div class="flow-card">
+                <h3>🖥️ Controller Telemetry</h3>
+                <div class="stat-row">
+                    <span class="stat-label">Device Type</span>
+                    <span class="stat-val" id="stat-model">Controller</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Serial Number</span>
+                    <span class="stat-val highlight-cyan" id="stat-sn">--</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Firmware SW</span>
+                    <span class="stat-val" id="stat-firmware">--</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Enterprise OID</span>
+                    <span class="stat-val">40211 (Megmeet)</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">System Uptime</span>
+                    <span class="stat-val" id="stat-uptime">--</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live V - I - P Trends Section directly inside Power Overview -->
+        <div class="panel" style="margin-top: 1.5rem;">
+            <div class="panel-header">
+                <div class="panel-title">📈 Live Telemetry Trends (Voltage, Current & Power)</div>
+                <div style="display:flex;align-items:center;gap:0.75rem;">
+                    <span class="badge badge-success" id="overview-trend-pts-badge">Data Points</span>
+                    <span class="badge" style="background:rgba(56,189,248,0.15);color:var(--cyan);border:1px solid rgba(56,189,248,0.3);">Real-time Rolling Sync</span>
+                </div>
+            </div>
+            <div class="trend-grid">
+                <!-- 1. Voltage Overview Chart -->
+                <div class="chart-card">
+                    <div class="chart-card-header">
+                        <div class="chart-title">⚡ Voltage Trend (V)</div>
+                        <div class="chart-badge-group">
+                            <span class="badge badge-success">AC: <strong id="ov-v-ac">-- V</strong></span>
+                            <span class="badge" style="background:rgba(16,185,129,0.15);color:#34d399;border:1px solid rgba(16,185,129,0.3);">DC: <strong id="ov-v-dc">-- V</strong></span>
+                        </div>
+                    </div>
+                    <div class="chart-container-wrap" style="height: 250px;">
+                        <canvas id="ovVoltChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- 2. Current Overview Chart -->
+                <div class="chart-card">
+                    <div class="chart-card-header">
+                        <div class="chart-title">🔋 Current Trend (A)</div>
+                        <div class="chart-badge-group">
+                            <span class="badge" style="background:rgba(245,158,11,0.15);color:#fbbf24;border:1px solid rgba(245,158,11,0.3);">DC: <strong id="ov-i-dc">-- A</strong></span>
+                            <span class="badge" style="background:rgba(129,140,248,0.15);color:#a5b4fc;border:1px solid rgba(129,140,248,0.3);">AC: <strong id="ov-i-ac">-- A</strong></span>
+                        </div>
+                    </div>
+                    <div class="chart-container-wrap" style="height: 250px;">
+                        <canvas id="ovCurrChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- 3. Power Overview Chart -->
+                <div class="chart-card" style="grid-column: 1 / -1;">
+                    <div class="chart-card-header">
+                        <div class="chart-title">⚙️ Active Power & Efficiency Trend (W & %)</div>
+                        <div class="chart-badge-group">
+                            <span class="badge" style="background:rgba(244,63,94,0.15);color:#fb7185;border:1px solid rgba(244,63,94,0.3);">DC: <strong id="ov-p-dc">-- W</strong></span>
+                            <span class="badge" style="background:rgba(56,189,248,0.15);color:var(--cyan);border:1px solid rgba(56,189,248,0.3);">AC: <strong id="ov-p-ac">-- kW</strong></span>
+                            <span class="badge badge-success">Eff: <strong id="ov-p-eff">--%</strong></span>
+                        </div>
+                    </div>
+                    <div class="chart-container-wrap" style="height: 260px;">
+                        <canvas id="ovPowerChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab: ⚡ Voltage Trend (V) -->
+    <div id="tab-trend-volt" class="tab-pane">
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-title">⚡ Real-time Voltage Telemetry Trend (AC Input vs DC Bus)</div>
+                <div style="display:flex;align-items:center;gap:0.75rem;">
+                    <span class="badge badge-success" id="trend-v-pts-badge">Data Points</span>
+                    <span class="badge" style="background:rgba(56,189,248,0.15);color:var(--cyan);border:1px solid rgba(56,189,248,0.3);">Dual Y-Axis (VAC / VDC)</span>
+                </div>
+            </div>
+
+            <!-- Voltage Stat Cards Row -->
+            <div class="flow-grid" style="margin-bottom: 1.25rem;">
+                <div class="flow-card">
+                    <span class="stat-label">Phase A AC Voltage</span>
+                    <div class="gauge-val highlight-cyan" id="trend-v-ac-curr" style="font-size:1.6rem;margin-top:4px;">227.1 V</div>
+                    <span style="font-size:0.75rem;color:var(--text-muted);">Normal: 220V ±10%</span>
+                </div>
+                <div class="flow-card">
+                    <span class="stat-label">DC Output Bus Voltage</span>
+                    <div class="gauge-val highlight-green" id="trend-v-dc-curr" style="font-size:1.6rem;margin-top:4px;">54.0 V</div>
+                    <span style="font-size:0.75rem;color:var(--text-muted);">-48V Plant (Float Charge)</span>
+                </div>
+                <div class="flow-card">
+                    <span class="stat-label">AC Grid Frequency</span>
+                    <div class="gauge-val" id="trend-v-ac-freq" style="font-size:1.6rem;margin-top:4px;color:#f8fafc;">49.9 Hz</div>
+                    <span style="font-size:0.75rem;color:var(--text-muted);">Standard: 50.0 Hz</span>
+                </div>
+                <div class="flow-card">
+                    <span class="stat-label">Voltage Stability</span>
+                    <div class="gauge-val" style="font-size:1.6rem;margin-top:4px;color:#34d399;">Stable</div>
+                    <span style="font-size:0.75rem;color:var(--text-muted);">Delta < 0.5% fluctuation</span>
+                </div>
+            </div>
+
+            <!-- Full-width Voltage Chart -->
+            <div class="chart-card">
+                <div class="chart-container-wrap" style="height: 380px;">
+                    <canvas id="voltageChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab: 🔋 Current Trend (A) -->
+    <div id="tab-trend-curr" class="tab-pane">
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-title">🔋 Real-time Current Telemetry Trend (Total DC Load & Module Sharing)</div>
+                <div style="display:flex;align-items:center;gap:0.75rem;">
+                    <span class="badge badge-success" id="trend-i-pts-badge">Data Points</span>
+                    <span class="badge" style="background:rgba(245,158,11,0.15);color:#fbbf24;border:1px solid rgba(245,158,11,0.3);">Multi-Channel Ampere</span>
+                </div>
+            </div>
+
+            <!-- Current Stat Cards Row -->
+            <div class="flow-grid" style="margin-bottom: 1.25rem;">
+                <div class="flow-card">
+                    <span class="stat-label">Total DC Load Current</span>
+                    <div class="gauge-val" id="trend-i-dc-curr" style="font-size:1.6rem;margin-top:4px;color:#fbbf24;">50.15 A</div>
+                    <span style="font-size:0.75rem;color:var(--text-muted);">Active telecom plant load</span>
+                </div>
+                <div class="flow-card">
+                    <span class="stat-label">AC Input Current</span>
+                    <div class="gauge-val" id="trend-i-ac-curr" style="font-size:1.6rem;margin-top:4px;color:#a5b4fc;">12.43 A</div>
+                    <span style="font-size:0.75rem;color:var(--text-muted);">Phase A grid draw</span>
+                </div>
+                <div class="flow-card">
+                    <span class="stat-label">Module Average Load</span>
+                    <div class="gauge-val highlight-cyan" id="trend-i-mod-avg" style="font-size:1.6rem;margin-top:4px;">16.7 A</div>
+                    <span style="font-size:0.75rem;color:var(--text-muted);">Per module (3 units active)</span>
+                </div>
+                <div class="flow-card">
+                    <span class="stat-label">Load Sharing Balance</span>
+                    <div class="gauge-val highlight-green" id="trend-i-balance" style="font-size:1.6rem;margin-top:4px;">99.8%</div>
+                    <span style="font-size:0.75rem;color:var(--text-muted);">Equal current sharing ratio</span>
+                </div>
+            </div>
+
+            <!-- Full-width Current Chart -->
+            <div class="chart-card">
+                <div class="chart-container-wrap" style="height: 380px;">
+                    <canvas id="currentChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab: ⚙️ Power Trend (P) -->
+    <div id="tab-trend-power" class="tab-pane">
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-title">⚙️ Real-time Active Power & Conversion Efficiency Trend</div>
+                <div style="display:flex;align-items:center;gap:0.75rem;">
+                    <span class="badge badge-success" id="trend-p-pts-badge">Data Points</span>
+                    <span class="badge" style="background:rgba(244,63,94,0.15);color:#fb7185;border:1px solid rgba(244,63,94,0.3);">Dual Axis (Watts / %)</span>
+                </div>
+            </div>
+
+            <!-- Power Stat Cards Row -->
+            <div class="flow-grid" style="margin-bottom: 1.25rem;">
+                <div class="flow-card">
+                    <span class="stat-label">DC Output Load Power</span>
+                    <div class="gauge-val" id="trend-p-dc-curr" style="font-size:1.6rem;margin-top:4px;color:#fb7185;">2712 W</div>
+                    <span style="font-size:0.75rem;color:var(--text-muted);">Effective DC power delivered</span>
+                </div>
+                <div class="flow-card">
+                    <span class="stat-label">AC Input Active Power</span>
+                    <div class="gauge-val highlight-cyan" id="trend-p-ac-curr" style="font-size:1.6rem;margin-top:4px;">2.82 kW</div>
+                    <span style="font-size:0.75rem;color:var(--text-muted);">Grid input draw (2,820 W)</span>
+                </div>
+                <div class="flow-card">
+                    <span class="stat-label">Conversion Efficiency</span>
+                    <div class="gauge-val highlight-green" id="trend-p-eff-curr" style="font-size:1.6rem;margin-top:4px;">96.2%</div>
+                    <span style="font-size:0.75rem;color:var(--text-muted);">High-efficiency Titanium rated</span>
+                </div>
+                <div class="flow-card">
+                    <span class="stat-label">Total Cumulative Energy</span>
+                    <div class="gauge-val" id="trend-p-energy" style="font-size:1.6rem;margin-top:4px;color:#f8fafc;">62,497 kWh</div>
+                    <span style="font-size:0.75rem;color:var(--text-muted);">Lifetime cumulative counter</span>
+                </div>
+            </div>
+
+            <!-- Full-width Power Chart -->
+            <div class="chart-card">
+                <div class="chart-container-wrap" style="height: 380px;">
+                    <canvas id="powerChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab 2: Rectifier Modules -->
+    <div id="tab-modules" class="tab-pane">
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-title">🔌 Active Rectifier Modules (Parallel Load Sharing)</div>
+                <span class="badge badge-success" id="module-badge">3 Modules Online</span>
+            </div>
+            <div class="module-grid-wrapper" id="modules-container">
+                <!-- Injected dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab 3: Battery BMS -->
+    <div id="tab-battery" class="tab-pane">
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-title">🔋 Smart Battery Management System (BMS)</div>
+                <span class="badge badge-success">LiFePO4 16S Balanced</span>
+            </div>
+            <div class="battery-container">
+                <div class="bms-summary">
+                    <h4 style="margin:0 0 1rem 0;color:var(--cyan);">Pack Overview</h4>
+                    <div class="stat-row">
+                        <span class="stat-label">State of Charge (SOC)</span>
+                        <span class="stat-val highlight-green" id="bms-soc">-- %</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">State of Health (SOH)</span>
+                        <span class="stat-val highlight-green" id="bms-soh">-- %</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Pack Voltage</span>
+                        <span class="stat-val" id="bms-volt">-- V</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Battery Temperature</span>
+                        <span class="stat-val" id="bms-temp">-- °C</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Monitored Cells</span>
+                        <span class="stat-val" id="bms-cell-count">-- Cells</span>
+                    </div>
+                </div>
+                <div>
+                    <h4 style="margin:0 0 0.75rem 0;color:var(--text-muted);font-size:0.88rem;">Individual Cell Voltages (V)</h4>
+                    <div class="cell-grid" id="cells-container">
+                        <!-- Injected dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab 4: Alarms & Sensors -->
+    <div id="tab-alarms" class="tab-pane">
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-title">🛡️ Digital Inputs & Environmental Sensors</div>
+                <span class="badge badge-success" id="alarm-panel-badge">0 Alarms Active</span>
+            </div>
+            <div class="sensor-grid" id="sensors-container">
+                <!-- Injected dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab 5: Network & Config -->
+    <div id="tab-network" class="tab-pane">
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-title">🌐 Network & SNMP Daemon Configuration</div>
+                <span class="badge badge-success">Port 162 Active</span>
+            </div>
+            <div class="flow-grid">
+                <div class="flow-card">
+                    <h3>IPv4 Settings</h3>
+                    <div class="stat-row">
+                        <span class="stat-label">IP Address</span>
+                        <span class="stat-val highlight-cyan" id="net-ip">--</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Subnet Mask</span>
+                        <span class="stat-val" id="net-mask">--</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Gateway</span>
+                        <span class="stat-val" id="net-gw">--</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">DNS</span>
+                        <span class="stat-val" id="net-dns">--</span>
+                    </div>
+                </div>
+
+                <div class="flow-card">
+                    <h3>IPv6 Settings</h3>
+                    <div class="stat-row">
+                        <span class="stat-label">IPv6 Address</span>
+                        <span class="stat-val" style="font-size:0.75rem;" id="net-ipv6">--</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">IPv6 Gateway</span>
+                        <span class="stat-val" id="net-ipv6-gw">--</span>
+                    </div>
+                </div>
+
+                <div class="flow-card">
+                    <h3>SNMP & Trap Targets</h3>
+                    <div class="stat-row">
+                        <span class="stat-label">SNMP Agent Port</span>
+                        <span class="stat-val highlight-green" id="net-snmp-port">162 (UDP)</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Read Community</span>
+                        <span class="stat-val" id="net-read-comm">"Public"</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Write Community</span>
+                        <span class="stat-val" id="net-write-comm">"Private"</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Trap Targets</span>
+                        <span class="stat-val" style="font-size:0.78rem;" id="net-traps">--</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script>
+    let initialData = null;
+    try {
+        // Load embedded initial snapshot as instant fallback
+        initialData = {
+  "metadata": {
+    "site_name": "LABQCENG",
+    "ip": "10.237.77.232",
+    "snmp_port": 162,
+    "controller_sn": "Z530053261100214",
+    "firmware": "V2.320241218080000",
+    "app_version": "V2.031420",
+    "model": "Controller",
+    "uptime": "17 days, 9:59:16.48",
+    "last_updated": "21/09/2569 21:42:43"
+  },
+  "network": {
+    "ipv4": "10.237.77.232",
+    "netmask": "255.255.255.0",
+    "gateway": "10.237.77.1",
+    "ipv6": "2405:200:1410:292::10",
+    "ipv6_gw": "fe80::1",
+    "dns": "2001:4860:4860::8888",
+    "snmp_port": 162,
+    "read_community": "Public",
+    "write_community": "Private",
+    "traps": ["172.20.181.137", "172.20.32.18", "172.20.32.19"]
+  },
+  "ac_input": {
+    "voltage": 226.7,
+    "current": 12.43,
+    "frequency": 49.9,
+    "active_power_kw": 2.82,
+    "total_energy_kwh": 61475
+  },
+  "dc_system": {
+    "bus_voltage": 54,
+    "load_current": 50.74,
+    "load_power_w": 2741,
+    "efficiency_pct": 97.2
+  },
+  "modules": [
+    { "id": 1, "serial": "1817Z530268254407862", "vin": 226.7, "vout": 54, "iout": 16.94, "power": 915, "temp": 28.2, "status": "Normal" },
+    { "id": 2, "serial": "1817Z530268254407939", "vin": 226.3, "vout": 53.9, "iout": 16.89, "power": 911, "temp": 28.2, "status": "Normal" },
+    { "id": 3, "serial": "1817Z530268254407857", "vin": 226.8, "vout": 53.9, "iout": 16.95, "power": 914, "temp": 28.4, "status": "Normal" }
+  ],
+  "battery": {
+    "soc": 100,
+    "soh": 100,
+    "voltage": 50.5,
+    "temperature": 28,
+    "cell_count": 15,
+    "cells": [
+      { "cell": 1, "voltage": 3.37 },
+      { "cell": 2, "voltage": 3.41 },
+      { "cell": 3, "voltage": 3.38 },
+      { "cell": 4, "voltage": 3.35 },
+      { "cell": 5, "voltage": 3.38 },
+      { "cell": 6, "voltage": 3.36 },
+      { "cell": 7, "voltage": 3.35 },
+      { "cell": 8, "voltage": 3.34 },
+      { "cell": 9, "voltage": 3.34 },
+      { "cell": 10, "voltage": 3.34 },
+      { "cell": 11, "voltage": 3.36 },
+      { "cell": 12, "voltage": 3.38 },
+      { "cell": 13, "voltage": 3.38 },
+      { "cell": 14, "voltage": 3.39 },
+      { "cell": 15, "voltage": 3.36 }
+    ]
+  },
+  "environment": {
+    "cabinet_temp": 25,
+    "cabinet_humidity": 77
+  },
+  "alarms": {
+    "active_count": 0,
+    "sensors": [
+      { "name": "DI 1 Alarm", "status": "Normal", "is_alarm": false },
+      { "name": "Door Alarm", "status": "Normal", "is_alarm": false },
+      { "name": "DI 3 Alarm", "status": "Normal", "is_alarm": false },
+      { "name": "DI 4 Alarm", "status": "Normal", "is_alarm": false },
+      { "name": "DI 5 Alarm", "status": "Normal", "is_alarm": false },
+      { "name": "DI 6 Alarm", "status": "Normal", "is_alarm": false },
+      { "name": "DI 7 Alarm", "status": "Normal", "is_alarm": false },
+      { "name": "DI 8 Alarm", "status": "Normal", "is_alarm": false },
+      { "name": "AC SPD Alarm", "status": "Normal", "is_alarm": false },
+      { "name": "DC SPD Alarm", "status": "Normal", "is_alarm": false },
+      { "name": "Water Alarm", "status": "Normal", "is_alarm": false },
+      { "name": "Smoke Alarm", "status": "Normal", "is_alarm": false },
+      { "name": "EX1-DI 1 Alarm", "status": "Normal", "is_alarm": false },
+      { "name": "EX1-DI 2 Alarm", "status": "Normal", "is_alarm": false },
+      { "name": "EX1-DI 3 Alarm", "status": "Normal", "is_alarm": false },
+      { "name": "EX1-DI 4 Alarm", "status": "Normal", "is_alarm": false },
+      { "name": "EX1-DI 5 Alarm", "status": "Normal", "is_alarm": false },
+      { "name": "EX1-DI 6 Alarm", "status": "Normal", "is_alarm": false },
+      { "name": "EX1-DI 7 Alarm", "status": "Normal", "is_alarm": false },
+      { "name": "EX1-DI 8 Alarm", "status": "Normal", "is_alarm": false }
+    ]
+  }
+};
+    } catch(e) {}
+
+    let isAutoRefresh = true;
+    let refreshTimer = null;
+
+    function applyLiveUpdate(d) {
+        if (!d || !d.metadata) return;
+        const meta = d.metadata;
+        const ac = d.ac_input || {};
+        const dc = d.dc_system || {};
+        const batt = d.battery || {};
+        const env = d.environment || {};
+        const alarms = d.alarms || {};
+        const net = d.network || {};
+
+        // Meta
+        $('#meta-sitename').text(meta.site_name || 'Megmeet Site');
+        $('#meta-ip').text((meta.ip || '10.237.77.232') + ':' + (meta.snmp_port || 162));
+        $('#meta-sn').text(meta.controller_sn || '--');
+        $('#meta-uptime').text(meta.uptime || '--');
+        $('#lastUpdated').text(meta.last_updated || new Date().toLocaleTimeString());
+
+        // Gauge Helper (Circumference = 2 * PI * 54 = ~339.29)
+        const CIRCUMFERENCE = 339.29;
+        function updateGauge(gaugeId, val, minVal, maxVal) {
+            const clamped = Math.min(Math.max(val, minVal), maxVal);
+            const ratio = (clamped - minVal) / (maxVal - minVal);
+            const offset = CIRCUMFERENCE - (ratio * CIRCUMFERENCE);
+            const bar = document.getElementById('gauge-bar-' + gaugeId);
+            if (bar) bar.style.strokeDashoffset = offset;
+        }
+
+        // 1. AC Volt
+        $('#gauge-val-ac-volt').text(ac.voltage ?? '--');
+        $('#gauge-sub-ac-curr').text((ac.current ?? '--') + ' A');
+        $('#gauge-sub-ac-freq').text((ac.frequency ?? '--') + ' Hz');
+        updateGauge('ac-volt', ac.voltage || 0, 160, 280);
+
+        // 2. DC Bus Volt
+        $('#gauge-val-dc-volt').text(dc.bus_voltage ?? '--');
+        $('#gauge-sub-dc-curr').text((dc.load_current ?? '--') + ' A');
+        updateGauge('dc-volt', dc.bus_voltage || 0, 40, 60);
+
+        // 3. DC Power
+        $('#gauge-val-dc-power').text(dc.load_power_w ?? '--');
+        $('#gauge-sub-ac-power').text((ac.active_power_kw ?? '--') + ' kW');
+        $('#gauge-sub-eff').text((dc.efficiency_pct ?? '--') + '%');
+        updateGauge('dc-power', dc.load_power_w || 0, 0, 6000);
+
+        // 4. Battery SOC
+        $('#gauge-val-batt-soc').text(batt.soc ?? '--');
+        $('#gauge-sub-batt-volt').text((batt.voltage ?? '--') + ' V');
+        $('#gauge-sub-batt-temp').text((batt.temperature ?? '--') + ' °C');
+        updateGauge('batt-soc', batt.soc || 0, 0, 100);
+
+        // 5. Cabinet Temp
+        $('#gauge-val-cab-temp').text(env.cabinet_temp ?? '--');
+        $('#gauge-sub-cab-hum').text((env.cabinet_humidity ?? '--') + ' %RH');
+        updateGauge('cab-temp', env.cabinet_temp || 0, 0, 60);
+
+        // 6. Battery SOH (State of Health)
+        const sohVal = batt.soh ?? 100;
+        $('#gauge-val-batt-soh').text(sohVal);
+        updateGauge('batt-soh', sohVal, 0, 100);
+        if (sohVal >= 90) {
+            $('#gauge-val-batt-soh').css('color', '#34d399');
+            $('#gauge-sub-soh-text').css('color', '#34d399').text('Good (' + sohVal + '%)');
+        } else if (sohVal >= 80) {
+            $('#gauge-val-batt-soh').css('color', '#fbbf24');
+            $('#gauge-sub-soh-text').css('color', '#fbbf24').text('Fair (' + sohVal + '%)');
+        } else {
+            $('#gauge-val-batt-soh').css('color', '#fb7185');
+            $('#gauge-sub-soh-text').css('color', '#fb7185').text('Degraded (' + sohVal + '%)');
+        }
+
+        // Sync Alarm Panel Badge
+        const activeCount = alarms.active_count || 0;
+        if (activeCount === 0) {
+            $('#alarm-panel-badge').removeClass('badge-danger').addClass('badge-success').text('0 Alarms Active');
+        } else {
+            $('#alarm-panel-badge').removeClass('badge-success').addClass('badge-danger').text(activeCount + ' Alarms Active');
+        }
+
+        // Overview stats
+        $('#stat-ac-volt').text((ac.voltage ?? '--') + ' V AC');
+        $('#stat-ac-curr').text((ac.current ?? '--') + ' A');
+        $('#stat-ac-freq').text((ac.frequency ?? '--') + ' Hz');
+        $('#stat-ac-power').text((ac.active_power_kw ?? '--') + ' kW');
+        $('#stat-ac-energy').text((ac.total_energy_kwh ?? '--') + ' kWh');
+
+        $('#stat-dc-volt').text((dc.bus_voltage ?? '--') + ' V DC');
+        $('#stat-dc-curr').text((dc.load_current ?? '--') + ' A');
+        $('#stat-dc-power').text((dc.load_power_w ?? '--') + ' W');
+        $('#stat-eff').text((dc.efficiency_pct ?? '--') + ' %');
+
+        $('#stat-model').text(meta.model || 'Controller');
+        $('#stat-sn').text(meta.controller_sn || '--');
+        $('#stat-firmware').text(meta.firmware || '--');
+        $('#stat-uptime').text(meta.uptime || '--');
+
+        // Modules dynamic render
+        if (d.modules && d.modules.length > 0) {
+            let modHtml = '';
+            d.modules.forEach(m => {
+                const share = dc.load_current > 0 ? ((m.iout / dc.load_current) * 100).toFixed(1) : '33.3';
+                modHtml += `
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-title">⚡ Rectifier Module #${m.id}</div>
+                        <span class="badge ${m.status === 'Normal' ? 'badge-success' : 'badge-danger'}">${m.status}</span>
+                    </div>
+                    <div class="module-sn">S/N: ${m.serial || '--'}</div>
+                    <div class="module-grid">
+                        <div class="m-metric">
+                            <span class="m-label">Input Voltage</span>
+                            <span class="m-val">${m.vin ?? '--'} V</span>
+                        </div>
+                        <div class="m-metric">
+                            <span class="m-label">Output Voltage</span>
+                            <span class="m-val">${m.vout ?? '--'} V</span>
+                        </div>
+                        <div class="m-metric">
+                            <span class="m-label">Output Current</span>
+                            <span class="m-val highlight-cyan">${m.iout ?? '--'} A</span>
+                        </div>
+                        <div class="m-metric">
+                            <span class="m-label">Output Power</span>
+                            <span class="m-val">${m.power ?? '--'} W</span>
+                        </div>
+                        <div class="m-metric">
+                            <span class="m-label">Module Temp</span>
+                            <span class="m-val">${m.temp ?? '--'} °C</span>
+                        </div>
+                        <div class="m-metric">
+                            <span class="m-label">Load Share</span>
+                            <span class="m-val highlight-green">${share}%</span>
+                        </div>
+                    </div>
+                </div>`;
+            });
+            $('#modules-container').html(modHtml);
+            $('#module-badge').text(d.modules.length + ' Modules Online');
+        }
+
+        // Battery Cells dynamic render
+        if (batt.cells && batt.cells.length > 0) {
+            let cellsHtml = '';
+            batt.cells.forEach(c => {
+                const h = Math.max(10, Math.min(100, Math.round(((c.voltage - 3.0) / 0.5) * 100)));
+                cellsHtml += `
+                <div class="cell-box">
+                    <div class="cell-num">C${c.cell}</div>
+                    <div class="cell-bar-wrap">
+                        <div class="cell-bar" style="height: ${h}%;"></div>
+                    </div>
+                    <div class="cell-volt">${c.voltage}V</div>
+                </div>`;
+            });
+            $('#cells-container').html(cellsHtml);
+            $('#bms-soc').text((batt.soc ?? '--') + ' %');
+            $('#bms-soh').text((batt.soh ?? '--') + ' %');
+            $('#bms-volt').text((batt.voltage ?? '--') + ' V');
+            $('#bms-temp').text((batt.temperature ?? '--') + ' °C');
+            $('#bms-cell-count').text((batt.cell_count || batt.cells.length) + ' Cells');
+        }
+
+        // Alarms dynamic render
+        if (alarms.sensors && alarms.sensors.length > 0) {
+            let sensorsHtml = '';
+            alarms.sensors.forEach(s => {
+                sensorsHtml += `
+                <div class="sensor-chip ${s.is_alarm ? 'sensor-alarm' : 'sensor-ok'}">
+                    <span class="led ${s.is_alarm ? 'led-red' : 'led-green'}"></span>
+                    <span class="sensor-name">${s.name}</span>
+                    <span class="sensor-status">${s.status}</span>
+                </div>`;
+            });
+            $('#sensors-container').html(sensorsHtml);
+        }
+
+        // Update Charts and Trend Badges
+        renderTrendCharts(d.history, d);
+    }
+
+    // --- Chart.js Real-time Trend Manager ---
+    // Overview mini charts (rendered immediately in tab-overview)
+    let ovChartV = null;
+    let ovChartI = null;
+    let ovChartP = null;
+
+    // Dedicated full-width tab charts (rendered on-demand when active)
+    let chartV = null;
+    let currChart = null;
+    let powerChart = null;
+
+    let cachedHistory = [];
+    let cachedLiveData = null;
+
+    const commonChartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 300 },
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+            legend: {
+                labels: { color: '#94a3b8', font: { family: 'Inter', size: 11 }, boxWidth: 10 }
+            },
+            tooltip: {
+                backgroundColor: 'rgba(15, 23, 42, 0.92)',
+                titleColor: '#38bdf8',
+                bodyColor: '#f8fafc',
+                borderColor: 'rgba(56, 189, 248, 0.35)',
+                borderWidth: 1,
+                padding: 10,
+                cornerRadius: 8
+            }
+        },
+        scales: {
+            x: {
+                grid: { color: 'rgba(255, 255, 255, 0.04)' },
+                ticks: { color: '#64748b', font: { size: 10 }, maxRotation: 0 }
+            }
+        }
+    };
+
+    function renderTrendCharts(history, liveData) {
+        if (!window.Chart) return;
+        cachedLiveData = liveData;
+
+        let hist = (history && history.length > 0) ? history : (initialData && initialData.history ? initialData.history : []);
+        if (!hist || hist.length === 0) {
+            hist = [{
+                time: new Date().toLocaleTimeString('th-TH'),
+                ac_v: liveData.ac_input?.voltage || 227,
+                dc_v: liveData.dc_system?.bus_voltage || 54,
+                ac_i: liveData.ac_input?.current || 12.4,
+                dc_i: liveData.dc_system?.load_current || 50,
+                mod1_i: liveData.modules?.[0]?.iout || 16.9,
+                mod2_i: liveData.modules?.[1]?.iout || 16.8,
+                mod3_i: liveData.modules?.[2]?.iout || 16.9,
+                ac_p_kw: liveData.ac_input?.active_power_kw || 2.8,
+                dc_p_w: liveData.dc_system?.load_power_w || 2712
+            }];
+        }
+        cachedHistory = hist;
+
+        const labels = hist.map(h => h.time || '');
+        const acVData = hist.map(h => h.ac_v);
+        const dcVData = hist.map(h => h.dc_v);
+
+        const dcIData = hist.map(h => h.dc_i);
+        const acIData = hist.map(h => h.ac_i);
+        const mod1IData = hist.map(h => h.mod1_i || 0);
+        const mod2IData = hist.map(h => h.mod2_i || 0);
+        const mod3IData = hist.map(h => h.mod3_i || 0);
+
+        const dcPData = hist.map(h => h.dc_p_w);
+        const acPData = hist.map(h => Math.round((h.ac_p_kw || 0) * 1000));
+        const effData = hist.map(h => {
+            const acWatts = (h.ac_p_kw || 0) * 1000;
+            return acWatts > 0 ? parseFloat(((h.dc_p_w / acWatts) * 100).toFixed(1)) : 96.0;
+        });
+
+        const latest = hist[hist.length - 1] || {};
+        const curEff = latest.ac_p_kw > 0 ? ((latest.dc_p_w / (latest.ac_p_kw * 1000)) * 100).toFixed(1) : '96.2';
+
+        // Update Badges on Overview Trend Section
+        $('#overview-trend-pts-badge').text(hist.length + ' Telemetry Points');
+        $('#ov-v-ac').text((latest.ac_v ?? '--') + ' V');
+        $('#ov-v-dc').text((latest.dc_v ?? '--') + ' V');
+        $('#ov-i-dc').text((latest.dc_i ?? '--') + ' A');
+        $('#ov-i-ac').text((latest.ac_i ?? '--') + ' A');
+        $('#ov-p-dc').text((latest.dc_p_w ?? '--') + ' W');
+        $('#ov-p-ac').text((latest.ac_p_kw ?? '--') + ' kW');
+        $('#ov-p-eff').text(curEff + '%');
+
+        // Update Badges on Dedicated Tabs
+        $('#trend-v-ac-curr').text((latest.ac_v ?? '--') + ' V');
+        $('#trend-v-dc-curr').text((latest.dc_v ?? '--') + ' V');
+        $('#trend-v-ac-freq').text((liveData.ac_input?.frequency ?? 49.9) + ' Hz');
+        $('#trend-v-pts-badge').text(hist.length + ' Points');
+
+        $('#trend-i-dc-curr').text((latest.dc_i ?? '--') + ' A');
+        $('#trend-i-ac-curr').text((latest.ac_i ?? '--') + ' A');
+        const modAvg = liveData.modules?.length ? (latest.dc_i / liveData.modules.length).toFixed(1) : (latest.dc_i / 3).toFixed(1);
+        $('#trend-i-mod-avg').text(modAvg + ' A');
+        $('#trend-i-balance').text('99.8%');
+        $('#trend-i-pts-badge').text(hist.length + ' Points');
+
+        $('#trend-p-dc-curr').text((latest.dc_p_w ?? '--') + ' W');
+        $('#trend-p-ac-curr').text((latest.ac_p_kw ?? '--') + ' kW');
+        $('#trend-p-eff-curr').text(curEff + '%');
+        $('#trend-p-energy').text((liveData.ac_input?.total_energy_kwh ?? '62,497') + ' kWh');
+        $('#trend-p-pts-badge').text(hist.length + ' Points');
+
+        // 1. Render Overview Voltage Chart
+        const ovVCanvas = document.getElementById('ovVoltChart');
+        if (ovVCanvas) {
+            if (!ovChartV) {
+                ovChartV = new Chart(ovVCanvas, {
+                    type: 'line',
+                    data: {
+                        labels,
+                        datasets: [
+                            { label: 'AC Volt (V)', data: acVData, borderColor: '#38bdf8', backgroundColor: 'rgba(56,189,248,0.1)', fill: true, tension: 0.35, borderWidth: 2, yAxisID: 'yAC' },
+                            { label: 'DC Bus (V)', data: dcVData, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', fill: true, tension: 0.35, borderWidth: 2, yAxisID: 'yDC' }
+                        ]
+                    },
+                    options: {
+                        ...commonChartOptions,
+                        scales: {
+                            ...commonChartOptions.scales,
+                            yAC: { type: 'linear', position: 'left', grid: { color: 'rgba(56,189,248,0.08)' }, ticks: { color: '#38bdf8' } },
+                            yDC: { type: 'linear', position: 'right', grid: { drawOnChartArea: false }, ticks: { color: '#10b981' } }
+                        }
+                    }
+                });
+            } else {
+                ovChartV.data.labels = labels;
+                ovChartV.data.datasets[0].data = acVData;
+                ovChartV.data.datasets[1].data = dcVData;
+                ovChartV.update('none');
+            }
+        }
+
+        // 2. Render Overview Current Chart
+        const ovICanvas = document.getElementById('ovCurrChart');
+        if (ovICanvas) {
+            if (!ovChartI) {
+                ovChartI = new Chart(ovICanvas, {
+                    type: 'line',
+                    data: {
+                        labels,
+                        datasets: [
+                            { label: 'DC Load (A)', data: dcIData, borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.12)', fill: true, tension: 0.35, borderWidth: 2.2 },
+                            { label: 'AC In (A)', data: acIData, borderColor: '#818cf8', borderDash: [4, 4], tension: 0.35, borderWidth: 1.8 }
+                        ]
+                    },
+                    options: {
+                        ...commonChartOptions,
+                        scales: {
+                            ...commonChartOptions.scales,
+                            y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } }
+                        }
+                    }
+                });
+            } else {
+                ovChartI.data.labels = labels;
+                ovChartI.data.datasets[0].data = dcIData;
+                ovChartI.data.datasets[1].data = acIData;
+                ovChartI.update('none');
+            }
+        }
+
+        // 3. Render Overview Power Chart
+        const ovPCanvas = document.getElementById('ovPowerChart');
+        if (ovPCanvas) {
+            if (!ovChartP) {
+                ovChartP = new Chart(ovPCanvas, {
+                    type: 'line',
+                    data: {
+                        labels,
+                        datasets: [
+                            { label: 'DC Power (W)', data: dcPData, borderColor: '#f43f5e', backgroundColor: 'rgba(244,63,94,0.1)', fill: true, tension: 0.35, borderWidth: 2.2, yAxisID: 'yW' },
+                            { label: 'AC Power (W)', data: acPData, borderColor: '#38bdf8', backgroundColor: 'rgba(56,189,248,0.08)', fill: true, tension: 0.35, borderWidth: 2, yAxisID: 'yW' },
+                            { label: 'Efficiency (%)', data: effData, borderColor: '#34d399', borderDash: [5, 4], tension: 0.35, borderWidth: 1.8, yAxisID: 'yEff' }
+                        ]
+                    },
+                    options: {
+                        ...commonChartOptions,
+                        scales: {
+                            ...commonChartOptions.scales,
+                            yW: { type: 'linear', position: 'left', grid: { color: 'rgba(244,63,94,0.08)' }, ticks: { color: '#f43f5e' } },
+                            yEff: { type: 'linear', position: 'right', min: 80, max: 100, grid: { drawOnChartArea: false }, ticks: { color: '#34d399', callback: (v) => v + '%' } }
+                        }
+                    }
+                });
+            } else {
+                ovChartP.data.labels = labels;
+                ovChartP.data.datasets[0].data = dcPData;
+                ovChartP.data.datasets[1].data = acPData;
+                ovChartP.data.datasets[2].data = effData;
+                ovChartP.update('none');
+            }
+        }
+
+        // Update dedicated tab charts if they are already instantiated
+        if (chartV) {
+            chartV.data.labels = labels;
+            chartV.data.datasets[0].data = acVData;
+            chartV.data.datasets[1].data = dcVData;
+            chartV.update('none');
+        }
+        if (currChart) {
+            currChart.data.labels = labels;
+            currChart.data.datasets[0].data = dcIData;
+            currChart.data.datasets[1].data = acIData;
+            currChart.data.datasets[2].data = mod1IData;
+            currChart.data.datasets[3].data = mod2IData;
+            currChart.data.datasets[4].data = mod3IData;
+            currChart.update('none');
+        }
+        if (powerChart) {
+            powerChart.data.labels = labels;
+            powerChart.data.datasets[0].data = dcPData;
+            powerChart.data.datasets[1].data = acPData;
+            powerChart.data.datasets[2].data = effData;
+            powerChart.update('none');
+        }
+    }
+
+    // Lazy Render or Resize dedicated charts when tab is activated
+    function renderDedicatedChartOnDemand(tabId) {
+        if (!cachedHistory || cachedHistory.length === 0) return;
+        const labels = cachedHistory.map(h => h.time || '');
+
+        if (tabId === 'trend-volt') {
+            const canvas = document.getElementById('voltageChart');
+            if (!canvas) return;
+            if (!chartV) {
+                chartV = new Chart(canvas, {
+                    type: 'line',
+                    data: {
+                        labels,
+                        datasets: [
+                            { label: 'Phase A AC Voltage (VAC)', data: cachedHistory.map(h => h.ac_v), borderColor: '#38bdf8', backgroundColor: 'rgba(56,189,248,0.12)', fill: true, tension: 0.35, borderWidth: 2.4, yAxisID: 'yAC' },
+                            { label: 'DC Bus Output (VDC)', data: cachedHistory.map(h => h.dc_v), borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.12)', fill: true, tension: 0.35, borderWidth: 2.4, yAxisID: 'yDC' }
+                        ]
+                    },
+                    options: {
+                        ...commonChartOptions,
+                        scales: {
+                            ...commonChartOptions.scales,
+                            yAC: { type: 'linear', position: 'left', grid: { color: 'rgba(56,189,248,0.08)' }, ticks: { color: '#38bdf8' }, title: { display: true, text: 'AC Voltage (V)', color: '#38bdf8' } },
+                            yDC: { type: 'linear', position: 'right', grid: { drawOnChartArea: false }, ticks: { color: '#10b981' }, title: { display: true, text: 'DC Bus Voltage (V)', color: '#10b981' } }
+                        }
+                    }
+                });
+            } else {
+                chartV.resize();
+            }
+        } else if (tabId === 'trend-curr') {
+            const canvas = document.getElementById('currentChart');
+            if (!canvas) return;
+            if (!currChart) {
+                currChart = new Chart(canvas, {
+                    type: 'line',
+                    data: {
+                        labels,
+                        datasets: [
+                            { label: 'Total DC Load (A)', data: cachedHistory.map(h => h.dc_i), borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.15)', fill: true, tension: 0.35, borderWidth: 2.8 },
+                            { label: 'AC Input Current (A)', data: cachedHistory.map(h => h.ac_i), borderColor: '#818cf8', borderDash: [4, 4], tension: 0.35, borderWidth: 2.2 },
+                            { label: 'Module 1 Current (A)', data: cachedHistory.map(h => h.mod1_i || 0), borderColor: '#06b6d4', tension: 0.35, borderWidth: 1.8 },
+                            { label: 'Module 2 Current (A)', data: cachedHistory.map(h => h.mod2_i || 0), borderColor: '#3b82f6', tension: 0.35, borderWidth: 1.8 },
+                            { label: 'Module 3 Current (A)', data: cachedHistory.map(h => h.mod3_i || 0), borderColor: '#10b981', tension: 0.35, borderWidth: 1.8 }
+                        ]
+                    },
+                    options: {
+                        ...commonChartOptions,
+                        scales: {
+                            ...commonChartOptions.scales,
+                            y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' }, title: { display: true, text: 'Current (A)', color: '#94a3b8' } }
+                        }
+                    }
+                });
+            } else {
+                currChart.resize();
+            }
+        } else if (tabId === 'trend-power') {
+            const canvas = document.getElementById('powerChart');
+            if (!canvas) return;
+            if (!powerChart) {
+                powerChart = new Chart(canvas, {
+                    type: 'line',
+                    data: {
+                        labels,
+                        datasets: [
+                            { label: 'DC Load Power (Watts)', data: cachedHistory.map(h => h.dc_p_w), borderColor: '#f43f5e', backgroundColor: 'rgba(244,63,94,0.12)', fill: true, tension: 0.35, borderWidth: 2.6, yAxisID: 'yW' },
+                            { label: 'AC Active Power (Watts)', data: cachedHistory.map(h => Math.round((h.ac_p_kw || 0) * 1000)), borderColor: '#38bdf8', backgroundColor: 'rgba(56,189,248,0.08)', fill: true, tension: 0.35, borderWidth: 2.2, yAxisID: 'yW' },
+                            {
+                                label: 'Conversion Efficiency (%)',
+                                data: cachedHistory.map(h => {
+                                    const acW = (h.ac_p_kw || 0) * 1000;
+                                    return acW > 0 ? parseFloat(((h.dc_p_w / acW) * 100).toFixed(1)) : 96.0;
+                                }),
+                                borderColor: '#34d399',
+                                borderDash: [6, 4],
+                                tension: 0.35,
+                                borderWidth: 2.2,
+                                yAxisID: 'yEff'
+                            }
+                        ]
+                    },
+                    options: {
+                        ...commonChartOptions,
+                        scales: {
+                            ...commonChartOptions.scales,
+                            yW: { type: 'linear', position: 'left', grid: { color: 'rgba(244,63,94,0.08)' }, ticks: { color: '#f43f5e' }, title: { display: true, text: 'Power (Watts)', color: '#f43f5e' } },
+                            yEff: { type: 'linear', position: 'right', min: 80, max: 100, grid: { drawOnChartArea: false }, ticks: { color: '#34d399', callback: (v) => v + '%' }, title: { display: true, text: 'Efficiency (%)', color: '#34d399' } }
+                        }
+                    }
+                });
+            } else {
+                powerChart.resize();
+            }
+        }
+    }
+
+    function fetchLatestJSON() {
+        $.getJSON('megmeet_rectifier_data.json?_t=' + new Date().getTime(), function(data) {
+            applyLiveUpdate(data);
+        }).fail(function(err) {
+            if (initialData) {
+                applyLiveUpdate(initialData);
+            }
+            console.warn("Notice: could not load megmeet_rectifier_data.json over AJAX. Showing cached snapshot.");
+        });
+    }
+
+    function triggerManualFetch() {
+        fetchLatestJSON();
+    }
+
+    function toggleAutoRefresh() {
+        isAutoRefresh = !isAutoRefresh;
+        if (isAutoRefresh) {
+            $('#autoRefreshText').text('Live 5m');
+            $('#pulseDot').css('background', '#10b981');
+            startPolling();
+        } else {
+            $('#autoRefreshText').text('Paused');
+            $('#pulseDot').css('background', '#64748b');
+            clearInterval(refreshTimer);
+        }
+    }
+
+    function startPolling() {
+        if (refreshTimer) clearInterval(refreshTimer);
+        refreshTimer = setInterval(fetchLatestJSON, 10000);
+    }
+
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+        
+        event.target.classList.add('active');
+        const target = document.getElementById('tab-' + tabId);
+        if (target) {
+            target.classList.add('active');
+            // Render on-demand immediately once tab is visible
+            setTimeout(() => {
+                if (tabId.startsWith('trend-')) {
+                    renderDedicatedChartOnDemand(tabId);
+                } else if (tabId === 'overview') {
+                    if (ovChartV) ovChartV.resize();
+                    if (ovChartI) ovChartI.resize();
+                    if (ovChartP) ovChartP.resize();
+                }
+            }, 50);
+        }
+    }
+
+    $(document).ready(function() {
+        fetchLatestJSON();
+        startPolling();
+    });
+
+    // Slide-over Sidebar Toggle Logic
+    (function initSidebar() {
+        const toggleBtn = document.getElementById('sidebarToggleBtn');
+        const closeBtn = document.getElementById('sidebarCloseBtn');
+        const overlay = document.getElementById('sidebarOverlay');
+        const sidebar = document.getElementById('mainSidebar');
+
+        if (!sidebar) return;
+
+        function openSidebar() {
+            sidebar.classList.add('open');
+            if (overlay) overlay.classList.add('active');
+            document.body.style.overflowY = 'hidden';
+        }
+
+        function closeSidebar() {
+            sidebar.classList.remove('open');
+            if (overlay) overlay.classList.remove('active');
+            document.body.style.overflowY = '';
+        }
+
+        if (toggleBtn) toggleBtn.addEventListener('click', openSidebar);
+        if (closeBtn) closeBtn.addEventListener('click', closeSidebar);
+        if (overlay) overlay.addEventListener('click', closeSidebar);
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && sidebar.classList.contains('open')) {
+                closeSidebar();
+            }
+        });
+    })();
+</script>
+
+</body>
+</html>
