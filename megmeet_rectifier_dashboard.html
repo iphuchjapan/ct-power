@@ -1737,8 +1737,8 @@
                         ...commonChartOptions,
                         scales: {
                             ...commonChartOptions.scales,
-                            yAC: { type: 'linear', position: 'left', grid: { color: 'rgba(56,189,248,0.08)' }, ticks: { color: '#38bdf8' }, suggestedMin: 210, suggestedMax: 245 },
-                            yDC: { type: 'linear', position: 'right', grid: { drawOnChartArea: false }, ticks: { color: '#10b981' }, suggestedMin: 48, suggestedMax: 58 }
+                            yAC: { type: 'linear', position: 'left', min: 0, max: 240, grid: { color: 'rgba(56,189,248,0.08)' }, ticks: { color: '#38bdf8' } },
+                            yDC: { type: 'linear', position: 'right', min: 40, max: 60, grid: { drawOnChartArea: false }, ticks: { color: '#10b981' } }
                         }
                     }
                 });
@@ -1767,7 +1767,7 @@
                         ...commonChartOptions,
                         scales: {
                             ...commonChartOptions.scales,
-                            y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' }, beginAtZero: true, suggestedMin: 0 }
+                            y: { type: 'linear', min: 0, max: 90, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } }
                         }
                     }
                 });
@@ -1797,7 +1797,7 @@
                         ...commonChartOptions,
                         scales: {
                             ...commonChartOptions.scales,
-                            yW: { type: 'linear', position: 'left', grid: { color: 'rgba(244,63,94,0.08)' }, ticks: { color: '#f43f5e' }, beginAtZero: true, suggestedMin: 0 },
+                            yW: { type: 'linear', position: 'left', min: 0, max: 9000, grid: { color: 'rgba(244,63,94,0.08)' }, ticks: { color: '#f43f5e' } },
                             yEff: { type: 'linear', position: 'right', min: 80, max: 100, grid: { drawOnChartArea: false }, ticks: { color: '#34d399', callback: (v) => v + '%' } }
                         }
                     }
@@ -1858,8 +1858,8 @@
                         ...commonChartOptions,
                         scales: {
                             ...commonChartOptions.scales,
-                            yAC: { type: 'linear', position: 'left', grid: { color: 'rgba(56,189,248,0.08)' }, ticks: { color: '#38bdf8' }, suggestedMin: 210, suggestedMax: 245, title: { display: true, text: 'AC Voltage (V)', color: '#38bdf8' } },
-                            yDC: { type: 'linear', position: 'right', grid: { drawOnChartArea: false }, ticks: { color: '#10b981' }, suggestedMin: 48, suggestedMax: 58, title: { display: true, text: 'DC Bus Voltage (V)', color: '#10b981' } }
+                            yAC: { type: 'linear', position: 'left', min: 0, max: 240, grid: { color: 'rgba(56,189,248,0.08)' }, ticks: { color: '#38bdf8' }, title: { display: true, text: 'AC Voltage (V)', color: '#38bdf8' } },
+                            yDC: { type: 'linear', position: 'right', min: 40, max: 60, grid: { drawOnChartArea: false }, ticks: { color: '#10b981' }, title: { display: true, text: 'DC Bus Voltage (V)', color: '#10b981' } }
                         }
                     }
                 });
@@ -1886,7 +1886,7 @@
                         ...commonChartOptions,
                         scales: {
                             ...commonChartOptions.scales,
-                            y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' }, beginAtZero: true, suggestedMin: 0, title: { display: true, text: 'Current (A)', color: '#94a3b8' } }
+                            y: { type: 'linear', min: 0, max: 90, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' }, title: { display: true, text: 'Current (A)', color: '#94a3b8' } }
                         }
                     }
                 });
@@ -1923,7 +1923,7 @@
                         ...commonChartOptions,
                         scales: {
                             ...commonChartOptions.scales,
-                            yW: { type: 'linear', position: 'left', grid: { color: 'rgba(244,63,94,0.08)' }, ticks: { color: '#f43f5e' }, beginAtZero: true, suggestedMin: 0, title: { display: true, text: 'Power (Watts)', color: '#f43f5e' } },
+                            yW: { type: 'linear', position: 'left', min: 0, max: 9000, grid: { color: 'rgba(244,63,94,0.08)' }, ticks: { color: '#f43f5e' }, title: { display: true, text: 'Power (Watts)', color: '#f43f5e' } },
                             yEff: { type: 'linear', position: 'right', min: 80, max: 100, grid: { drawOnChartArea: false }, ticks: { color: '#34d399', callback: (v) => v + '%' }, title: { display: true, text: 'Efficiency (%)', color: '#34d399' } }
                         }
                     }
