@@ -7,8 +7,8 @@
     "firmware": "V2.320241218080000",
     "app_version": "V2.031420",
     "model": "Controller",
-    "uptime": "29 days, 23:00:52.65",
-    "last_updated": "04/10/2569 10:44:23"
+    "uptime": "29 days, 23:01:40.61",
+    "last_updated": "04/10/2569 10:45:11"
   },
   "network": {
     "ipv4": "10.237.77.232",
@@ -27,33 +27,33 @@
     ]
   },
   "ac_input": {
-    "voltage": 227.8,
-    "current": 7.07,
-    "frequency": 49.8,
-    "active_power_kw": 1.61,
+    "voltage": 227.6,
+    "current": 6.89,
+    "frequency": 50.1,
+    "active_power_kw": 1.57,
     "total_energy_kwh": 16986
   },
   "dc_system": {
     "bus_voltage": 54,
     "load_current": 28.12,
     "load_power_w": 1519,
-    "efficiency_pct": 94.3
+    "efficiency_pct": 96.8
   },
   "modules": [
     {
       "id": 1,
       "serial": "1817Z530268254407862",
-      "vin": 227.5,
+      "vin": 227.3,
       "vout": 53.8,
-      "iout": 9.48,
-      "power": 510,
+      "iout": 9.53,
+      "power": 512,
       "temp": 32.2,
       "status": "Normal"
     },
     {
       "id": 2,
       "serial": "1817Z530268254407939",
-      "vin": 227.8,
+      "vin": 227,
       "vout": 53.7,
       "iout": 9.53,
       "power": 511,
@@ -65,8 +65,8 @@
       "serial": "1817Z530268254407857",
       "vin": 227.4,
       "vout": 53.9,
-      "iout": 9.5,
-      "power": 512,
+      "iout": 9.47,
+      "power": 510,
       "temp": 32.2,
       "status": "Normal"
     }
@@ -141,8 +141,8 @@
     ]
   },
   "environment": {
-    "cabinet_temp": 28.9,
-    "cabinet_humidity": 84.1
+    "cabinet_temp": 29.1,
+    "cabinet_humidity": 84.5
   },
   "alarms": {
     "active_count": 0,
@@ -7528,6 +7528,20 @@
       "mod2_i": 9.53,
       "mod3_i": 9.5,
       "ac_p_kw": 1.61,
+      "dc_p_w": 1519
+    },
+    {
+      "time": "10:45",
+      "dt": "10-04 10:45",
+      "ts": 1791085511258,
+      "ac_v": 227.6,
+      "dc_v": 54,
+      "ac_i": 6.89,
+      "dc_i": 28.12,
+      "mod1_i": 9.53,
+      "mod2_i": 9.53,
+      "mod3_i": 9.47,
+      "ac_p_kw": 1.57,
       "dc_p_w": 1519
     }
   ]
