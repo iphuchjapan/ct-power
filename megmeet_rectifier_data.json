@@ -7,8 +7,8 @@
     "firmware": "V2.320241218080000",
     "app_version": "V2.031420",
     "model": "Controller",
-    "uptime": "30 days, 19:16:06.99",
-    "last_updated": "05/10/2569 06:59:36"
+    "uptime": "30 days, 19:16:39.95",
+    "last_updated": "05/10/2569 07:00:09"
   },
   "network": {
     "ipv4": "10.237.77.232",
@@ -28,44 +28,44 @@
   },
   "ac_input": {
     "voltage": 228.1,
-    "current": 6.89,
-    "frequency": 50.1,
-    "active_power_kw": 1.58,
+    "current": 6.85,
+    "frequency": 49.9,
+    "active_power_kw": 1.56,
     "total_energy_kwh": 11017
   },
   "dc_system": {
     "bus_voltage": 54,
-    "load_current": 28,
-    "load_power_w": 1512,
-    "efficiency_pct": 95.7
+    "load_current": 28.11,
+    "load_power_w": 1518,
+    "efficiency_pct": 97.3
   },
   "modules": [
     {
       "id": 1,
       "serial": "1817Z530268254407862",
-      "vin": 229,
+      "vin": 228.8,
       "vout": 53.8,
+      "iout": 9.5,
+      "power": 511,
+      "temp": 26.8,
+      "status": "Normal"
+    },
+    {
+      "id": 2,
+      "serial": "1817Z530268254407939",
+      "vin": 227.5,
+      "vout": 53.7,
       "iout": 9.44,
       "power": 507,
       "temp": 26.5,
       "status": "Normal"
     },
     {
-      "id": 2,
-      "serial": "1817Z530268254407939",
-      "vin": 227.7,
-      "vout": 53.7,
-      "iout": 9.42,
-      "power": 505,
-      "temp": 26.4,
-      "status": "Normal"
-    },
-    {
       "id": 3,
       "serial": "1817Z530268254407857",
-      "vin": 228.1,
+      "vin": 228,
       "vout": 53.9,
-      "iout": 9.47,
+      "iout": 9.48,
       "power": 510,
       "temp": 27.4,
       "status": "Normal"
@@ -7529,6 +7529,20 @@
       "mod3_i": 9.47,
       "ac_p_kw": 1.58,
       "dc_p_w": 1512
+    },
+    {
+      "time": "07:00",
+      "dt": "10-05 07:00",
+      "ts": 1791158409822,
+      "ac_v": 228.1,
+      "dc_v": 54,
+      "ac_i": 6.85,
+      "dc_i": 28.11,
+      "mod1_i": 9.5,
+      "mod2_i": 9.44,
+      "mod3_i": 9.48,
+      "ac_p_kw": 1.56,
+      "dc_p_w": 1518
     }
   ]
 }
