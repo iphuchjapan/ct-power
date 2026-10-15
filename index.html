@@ -74,6 +74,41 @@
             height: 270px;
         }
 
+        /* Time Range Selector Styles */
+        .time-range-group {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(15, 23, 42, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 9999px;
+            padding: 3px;
+            gap: 2px;
+            backdrop-filter: blur(8px);
+        }
+        .time-range-btn {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            font-size: 0.76rem;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            user-select: none;
+        }
+        .time-range-btn:hover {
+            color: #f8fafc;
+            background: rgba(255, 255, 255, 0.08);
+        }
+        .time-range-btn.active {
+            background: linear-gradient(135deg, #0284c7, #0ea5e9);
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(14, 165, 233, 0.4);
+            font-weight: 700;
+        }
+
         * { box-sizing: border-box; }
         html { scrollbar-gutter: stable !important; overflow-y: scroll !important; }
         body {
@@ -978,11 +1013,19 @@
 
         <!-- Live V - I - P Trends Section directly inside Power Overview -->
         <div class="panel" style="margin-top: 1.5rem;">
-            <div class="panel-header">
-                <div class="panel-title">📈 24-Hour Telemetry Trends (Voltage, Current & Power)</div>
-                <div style="display:flex;align-items:center;gap:0.75rem;">
+            <div class="panel-header" style="flex-wrap: wrap; gap: 0.75rem;">
+                <div class="panel-title">📈 Telemetry Trends (Voltage, Current & Power)</div>
+                <div style="display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;">
+                    <!-- Time Range Selector -->
+                    <div class="time-range-group" id="range-group-overview" title="เลือกช่วงเวลาแสดงผลกราฟ">
+                        <button type="button" class="time-range-btn" data-hours="1" onclick="setTimeRange(1)">1 ชม.</button>
+                        <button type="button" class="time-range-btn" data-hours="3" onclick="setTimeRange(3)">3 ชม.</button>
+                        <button type="button" class="time-range-btn" data-hours="6" onclick="setTimeRange(6)">6 ชม.</button>
+                        <button type="button" class="time-range-btn" data-hours="12" onclick="setTimeRange(12)">12 ชม.</button>
+                        <button type="button" class="time-range-btn active" data-hours="24" onclick="setTimeRange(24)">24 ชม.</button>
+                    </div>
                     <span class="badge badge-success" id="overview-trend-pts-badge">24h History (288 Points)</span>
-                    <span class="badge" style="background:rgba(56,189,248,0.15);color:var(--cyan);border:1px solid rgba(56,189,248,0.3);">24-Hour Rolling Window</span>
+                    <span class="badge" id="overview-time-span-badge" style="background:rgba(56,189,248,0.15);color:var(--cyan);border:1px solid rgba(56,189,248,0.3);">ช่วงเวลา: 24 ชม.</span>
                 </div>
             </div>
             <div class="trend-grid">
@@ -1035,9 +1078,16 @@
     <!-- Tab: ⚡ Voltage Trend (V) -->
     <div id="tab-trend-volt" class="tab-pane">
         <div class="panel">
-            <div class="panel-header">
+            <div class="panel-header" style="flex-wrap: wrap; gap: 0.75rem;">
                 <div class="panel-title">⚡ Real-time Voltage Telemetry Trend (AC Input vs DC Bus)</div>
-                <div style="display:flex;align-items:center;gap:0.75rem;">
+                <div style="display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;">
+                    <div class="time-range-group" id="range-group-volt" title="เลือกช่วงเวลาแสดงผลกราฟ">
+                        <button type="button" class="time-range-btn" data-hours="1" onclick="setTimeRange(1)">1 ชม.</button>
+                        <button type="button" class="time-range-btn" data-hours="3" onclick="setTimeRange(3)">3 ชม.</button>
+                        <button type="button" class="time-range-btn" data-hours="6" onclick="setTimeRange(6)">6 ชม.</button>
+                        <button type="button" class="time-range-btn" data-hours="12" onclick="setTimeRange(12)">12 ชม.</button>
+                        <button type="button" class="time-range-btn active" data-hours="24" onclick="setTimeRange(24)">24 ชม.</button>
+                    </div>
                     <span class="badge badge-success" id="trend-v-pts-badge">Data Points</span>
                     <span class="badge" style="background:rgba(56,189,248,0.15);color:var(--cyan);border:1px solid rgba(56,189,248,0.3);">Dual Y-Axis (VAC / VDC)</span>
                 </div>
@@ -1079,9 +1129,16 @@
     <!-- Tab: 🔋 Current Trend (A) -->
     <div id="tab-trend-curr" class="tab-pane">
         <div class="panel">
-            <div class="panel-header">
+            <div class="panel-header" style="flex-wrap: wrap; gap: 0.75rem;">
                 <div class="panel-title">🔋 Real-time Current Telemetry Trend (Total DC Load & Module Sharing)</div>
-                <div style="display:flex;align-items:center;gap:0.75rem;">
+                <div style="display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;">
+                    <div class="time-range-group" id="range-group-curr" title="เลือกช่วงเวลาแสดงผลกราฟ">
+                        <button type="button" class="time-range-btn" data-hours="1" onclick="setTimeRange(1)">1 ชม.</button>
+                        <button type="button" class="time-range-btn" data-hours="3" onclick="setTimeRange(3)">3 ชม.</button>
+                        <button type="button" class="time-range-btn" data-hours="6" onclick="setTimeRange(6)">6 ชม.</button>
+                        <button type="button" class="time-range-btn" data-hours="12" onclick="setTimeRange(12)">12 ชม.</button>
+                        <button type="button" class="time-range-btn active" data-hours="24" onclick="setTimeRange(24)">24 ชม.</button>
+                    </div>
                     <span class="badge badge-success" id="trend-i-pts-badge">Data Points</span>
                     <span class="badge" style="background:rgba(245,158,11,0.15);color:#fbbf24;border:1px solid rgba(245,158,11,0.3);">Multi-Channel Ampere</span>
                 </div>
@@ -1123,9 +1180,16 @@
     <!-- Tab: ⚙️ Power Trend (P) -->
     <div id="tab-trend-power" class="tab-pane">
         <div class="panel">
-            <div class="panel-header">
+            <div class="panel-header" style="flex-wrap: wrap; gap: 0.75rem;">
                 <div class="panel-title">⚙️ Real-time Active Power & Conversion Efficiency Trend</div>
-                <div style="display:flex;align-items:center;gap:0.75rem;">
+                <div style="display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;">
+                    <div class="time-range-group" id="range-group-power" title="เลือกช่วงเวลาแสดงผลกราฟ">
+                        <button type="button" class="time-range-btn" data-hours="1" onclick="setTimeRange(1)">1 ชม.</button>
+                        <button type="button" class="time-range-btn" data-hours="3" onclick="setTimeRange(3)">3 ชม.</button>
+                        <button type="button" class="time-range-btn" data-hours="6" onclick="setTimeRange(6)">6 ชม.</button>
+                        <button type="button" class="time-range-btn" data-hours="12" onclick="setTimeRange(12)">12 ชม.</button>
+                        <button type="button" class="time-range-btn active" data-hours="24" onclick="setTimeRange(24)">24 ชม.</button>
+                    </div>
                     <span class="badge badge-success" id="trend-p-pts-badge">Data Points</span>
                     <span class="badge" style="background:rgba(244,63,94,0.15);color:#fb7185;border:1px solid rgba(244,63,94,0.3);">Dual Axis (Watts / %)</span>
                 </div>
@@ -1593,6 +1657,39 @@
 
     let cachedHistory = [];
     let cachedLiveData = null;
+    let selectedRangeHours = 24; // Default: 24h
+    let currentFilteredHistory = [];
+
+    function setTimeRange(hours) {
+        selectedRangeHours = parseFloat(hours) || 24;
+        $('.time-range-btn').removeClass('active');
+        $(`.time-range-btn[data-hours="${selectedRangeHours}"]`).addClass('active');
+
+        if (cachedHistory && cachedHistory.length > 0) {
+            renderTrendCharts(cachedHistory, cachedLiveData || {});
+        }
+    }
+
+    function getFilteredHistory(hist, hours) {
+        if (!hist || hist.length === 0) return [];
+        const h = parseFloat(hours) || selectedRangeHours || 24;
+        if (h >= 24) return hist;
+
+        const lastItem = hist[hist.length - 1];
+        const lastTs = (lastItem && lastItem.ts) ? lastItem.ts : Date.now();
+        const cutoffTs = lastTs - (h * 60 * 60 * 1000);
+
+        const filtered = hist.filter(item => {
+            if (item.ts) return item.ts >= cutoffTs;
+            return true;
+        });
+
+        if (filtered.length === 0 && hist.length > 0) {
+            const count = Math.max(2, Math.round((h / 24) * hist.length));
+            return hist.slice(-count);
+        }
+        return filtered;
+    }
 
     function sanitizeMetric(val, max = 10000) {
         const n = parseFloat(val);
@@ -1627,8 +1724,9 @@
                     title: function(items) {
                         if (!items || !items.length) return '';
                         const idx = items[0].dataIndex;
-                        if (cachedHistory[idx] && cachedHistory[idx].dt) {
-                            return cachedHistory[idx].dt;
+                        const list = (currentFilteredHistory && currentFilteredHistory.length > 0) ? currentFilteredHistory : cachedHistory;
+                        if (list[idx] && list[idx].dt) {
+                            return list[idx].dt;
                         }
                         return items[0].label || '';
                     }
@@ -1669,20 +1767,22 @@
             }];
         }
         cachedHistory = hist;
+        const filteredHist = getFilteredHistory(hist, selectedRangeHours);
+        currentFilteredHistory = filteredHist;
 
-        const labels = hist.map(h => h.time || '');
-        const acVData = hist.map(h => sanitizeMetric(h.ac_v, 500));
-        const dcVData = hist.map(h => sanitizeMetric(h.dc_v, 200));
+        const labels = filteredHist.map(h => h.time || '');
+        const acVData = filteredHist.map(h => sanitizeMetric(h.ac_v, 500));
+        const dcVData = filteredHist.map(h => sanitizeMetric(h.dc_v, 200));
 
-        const dcIData = hist.map(h => sanitizeMetric(h.dc_i, 500));
-        const acIData = hist.map(h => sanitizeMetric(h.ac_i, 500));
-        const mod1IData = hist.map(h => sanitizeMetric(h.mod1_i, 500));
-        const mod2IData = hist.map(h => sanitizeMetric(h.mod2_i, 500));
-        const mod3IData = hist.map(h => sanitizeMetric(h.mod3_i, 500));
+        const dcIData = filteredHist.map(h => sanitizeMetric(h.dc_i, 500));
+        const acIData = filteredHist.map(h => sanitizeMetric(h.ac_i, 500));
+        const mod1IData = filteredHist.map(h => sanitizeMetric(h.mod1_i, 500));
+        const mod2IData = filteredHist.map(h => sanitizeMetric(h.mod2_i, 500));
+        const mod3IData = filteredHist.map(h => sanitizeMetric(h.mod3_i, 500));
 
-        const dcPData = hist.map(h => sanitizeMetric(h.dc_p_w, 50000));
-        const acPData = hist.map(h => Math.round(sanitizeMetric(h.ac_p_kw, 100) * 1000));
-        const effData = hist.map(h => {
+        const dcPData = filteredHist.map(h => sanitizeMetric(h.dc_p_w, 50000));
+        const acPData = filteredHist.map(h => Math.round(sanitizeMetric(h.ac_p_kw, 100) * 1000));
+        const effData = filteredHist.map(h => {
             const acWatts = sanitizeMetric(h.ac_p_kw, 100) * 1000;
             const dcW = sanitizeMetric(h.dc_p_w, 50000);
             return acWatts > 0 ? parseFloat(((dcW / acWatts) * 100).toFixed(1)) : 96.0;
@@ -1691,8 +1791,18 @@
         const latest = hist[hist.length - 1] || {};
         const curEff = latest.ac_p_kw > 0 ? ((latest.dc_p_w / (latest.ac_p_kw * 1000)) * 100).toFixed(1) : '96.2';
 
+        // Update active state of time range buttons across all panels
+        $('.time-range-btn').removeClass('active');
+        $(`.time-range-btn[data-hours="${selectedRangeHours}"]`).addClass('active');
+
+        // Formatted Range text & Time span
+        const rangeLabel = selectedRangeHours === 24 ? '24 ชม.' : `${selectedRangeHours} ชม.`;
+        const timeSpan = filteredHist.length > 1 ? `${filteredHist[0].time} - ${filteredHist[filteredHist.length - 1].time}` : '';
+        const badgeText = timeSpan ? `${filteredHist.length} จุด (${timeSpan})` : `${filteredHist.length} จุด (${rangeLabel})`;
+
         // Update Badges on Overview Trend Section
-        $('#overview-trend-pts-badge').text(hist.length + ' Points (24h Trend)');
+        $('#overview-trend-pts-badge').text(badgeText);
+        $('#overview-time-span-badge').text(`ช่วงเวลา: ${rangeLabel}`);
         $('#ov-v-ac').text((latest.ac_v ?? '--') + ' V');
         $('#ov-v-dc').text((latest.dc_v ?? '--') + ' V');
         $('#ov-i-dc').text((latest.dc_i ?? '--') + ' A');
@@ -1705,20 +1815,20 @@
         $('#trend-v-ac-curr').text((latest.ac_v ?? '--') + ' V');
         $('#trend-v-dc-curr').text((latest.dc_v ?? '--') + ' V');
         $('#trend-v-ac-freq').text((liveData.ac_input?.frequency ?? 49.9) + ' Hz');
-        $('#trend-v-pts-badge').text(hist.length + ' Points (24h Window)');
+        $('#trend-v-pts-badge').text(badgeText);
 
         $('#trend-i-dc-curr').text((latest.dc_i ?? '--') + ' A');
         $('#trend-i-ac-curr').text((latest.ac_i ?? '--') + ' A');
         const modAvg = liveData.modules?.length ? (latest.dc_i / liveData.modules.length).toFixed(1) : (latest.dc_i / 3).toFixed(1);
         $('#trend-i-mod-avg').text(modAvg + ' A');
         $('#trend-i-balance').text('99.8%');
-        $('#trend-i-pts-badge').text(hist.length + ' Points (24h Window)');
+        $('#trend-i-pts-badge').text(badgeText);
 
         $('#trend-p-dc-curr').text((latest.dc_p_w ?? '--') + ' W');
         $('#trend-p-ac-curr').text((latest.ac_p_kw ?? '--') + ' kW');
         $('#trend-p-eff-curr').text(curEff + '%');
         $('#trend-p-energy').text((liveData.ac_input?.total_energy_kwh ?? '62,497') + ' kWh');
-        $('#trend-p-pts-badge').text(hist.length + ' Points (24h Window)');
+        $('#trend-p-pts-badge').text(badgeText);
 
         // 1. Render Overview Voltage Chart
         const ovVCanvas = document.getElementById('ovVoltChart');
@@ -1839,7 +1949,10 @@
     // Lazy Render or Resize dedicated charts when tab is activated
     function renderDedicatedChartOnDemand(tabId) {
         if (!cachedHistory || cachedHistory.length === 0) return;
-        const labels = cachedHistory.map(h => h.time || '');
+        const hist = (currentFilteredHistory && currentFilteredHistory.length > 0)
+            ? currentFilteredHistory
+            : getFilteredHistory(cachedHistory, selectedRangeHours);
+        const labels = hist.map(h => h.time || '');
 
         if (tabId === 'trend-volt') {
             const canvas = document.getElementById('voltageChart');
@@ -1850,8 +1963,8 @@
                     data: {
                         labels,
                         datasets: [
-                            { label: 'Phase A AC Voltage (VAC)', data: cachedHistory.map(h => sanitizeMetric(h.ac_v, 500)), borderColor: '#38bdf8', backgroundColor: 'rgba(56,189,248,0.12)', fill: true, tension: 0.35, borderWidth: 2.4, yAxisID: 'yAC' },
-                            { label: 'DC Bus Output (VDC)', data: cachedHistory.map(h => sanitizeMetric(h.dc_v, 200)), borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.12)', fill: true, tension: 0.35, borderWidth: 2.4, yAxisID: 'yDC' }
+                            { label: 'Phase A AC Voltage (VAC)', data: hist.map(h => sanitizeMetric(h.ac_v, 500)), borderColor: '#38bdf8', backgroundColor: 'rgba(56,189,248,0.12)', fill: true, tension: 0.35, borderWidth: 2.4, yAxisID: 'yAC' },
+                            { label: 'DC Bus Output (VDC)', data: hist.map(h => sanitizeMetric(h.dc_v, 200)), borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.12)', fill: true, tension: 0.35, borderWidth: 2.4, yAxisID: 'yDC' }
                         ]
                     },
                     options: {
@@ -1875,11 +1988,11 @@
                     data: {
                         labels,
                         datasets: [
-                            { label: 'Total DC Load (A)', data: cachedHistory.map(h => sanitizeMetric(h.dc_i, 500)), borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.15)', fill: true, tension: 0.35, borderWidth: 2.8 },
-                            { label: 'AC Input Current (A)', data: cachedHistory.map(h => sanitizeMetric(h.ac_i, 500)), borderColor: '#818cf8', borderDash: [4, 4], tension: 0.35, borderWidth: 2.2 },
-                            { label: 'Module 1 Current (A)', data: cachedHistory.map(h => sanitizeMetric(h.mod1_i, 500)), borderColor: '#06b6d4', tension: 0.35, borderWidth: 1.8 },
-                            { label: 'Module 2 Current (A)', data: cachedHistory.map(h => sanitizeMetric(h.mod2_i, 500)), borderColor: '#3b82f6', tension: 0.35, borderWidth: 1.8 },
-                            { label: 'Module 3 Current (A)', data: cachedHistory.map(h => sanitizeMetric(h.mod3_i, 500)), borderColor: '#10b981', tension: 0.35, borderWidth: 1.8 }
+                            { label: 'Total DC Load (A)', data: hist.map(h => sanitizeMetric(h.dc_i, 500)), borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.15)', fill: true, tension: 0.35, borderWidth: 2.8 },
+                            { label: 'AC Input Current (A)', data: hist.map(h => sanitizeMetric(h.ac_i, 500)), borderColor: '#818cf8', borderDash: [4, 4], tension: 0.35, borderWidth: 2.2 },
+                            { label: 'Module 1 Current (A)', data: hist.map(h => sanitizeMetric(h.mod1_i, 500)), borderColor: '#06b6d4', tension: 0.35, borderWidth: 1.8 },
+                            { label: 'Module 2 Current (A)', data: hist.map(h => sanitizeMetric(h.mod2_i, 500)), borderColor: '#3b82f6', tension: 0.35, borderWidth: 1.8 },
+                            { label: 'Module 3 Current (A)', data: hist.map(h => sanitizeMetric(h.mod3_i, 500)), borderColor: '#10b981', tension: 0.35, borderWidth: 1.8 }
                         ]
                     },
                     options: {
@@ -1902,11 +2015,11 @@
                     data: {
                         labels,
                         datasets: [
-                            { label: 'DC Load Power (Watts)', data: cachedHistory.map(h => sanitizeMetric(h.dc_p_w, 50000)), borderColor: '#f43f5e', backgroundColor: 'rgba(244,63,94,0.12)', fill: true, tension: 0.35, borderWidth: 2.6, yAxisID: 'yW' },
-                            { label: 'AC Active Power (Watts)', data: cachedHistory.map(h => Math.round(sanitizeMetric(h.ac_p_kw, 100) * 1000)), borderColor: '#38bdf8', backgroundColor: 'rgba(56,189,248,0.08)', fill: true, tension: 0.35, borderWidth: 2.2, yAxisID: 'yW' },
+                            { label: 'DC Load Power (Watts)', data: hist.map(h => sanitizeMetric(h.dc_p_w, 50000)), borderColor: '#f43f5e', backgroundColor: 'rgba(244,63,94,0.12)', fill: true, tension: 0.35, borderWidth: 2.6, yAxisID: 'yW' },
+                            { label: 'AC Active Power (Watts)', data: hist.map(h => Math.round(sanitizeMetric(h.ac_p_kw, 100) * 1000)), borderColor: '#38bdf8', backgroundColor: 'rgba(56,189,248,0.08)', fill: true, tension: 0.35, borderWidth: 2.2, yAxisID: 'yW' },
                             {
                                 label: 'Conversion Efficiency (%)',
-                                data: cachedHistory.map(h => {
+                                data: hist.map(h => {
                                     const acW = sanitizeMetric(h.ac_p_kw, 100) * 1000;
                                     const dcW = sanitizeMetric(h.dc_p_w, 50000);
                                     return acW > 0 ? parseFloat(((dcW / acW) * 100).toFixed(1)) : 96.0;
