@@ -772,6 +772,7 @@
         <a href="traffic_dashboard.html" id="nav-uplinktraffic">Uplink Traffic</a>
         <a href="optical_dashboard.html" id="nav-optical">Optical</a>
         <a href="megmeet_rectifier_dashboard.html" id="nav-megmeet" class="sub-link active">⚡ Megmeet Rectifier (Live)</a>
+        <a href="t3_battery_dashboard.html" id="nav-t3-battery" class="sub-link">🔋 T3 Battery Monitor (Live)</a>
         <a href="megmeet_rectifier_history.html" id="nav-megmeet-history" class="sub-link">📈 Rectifier Raw Data (D:\Rectifier)</a>
     </div>
 </nav>
@@ -927,7 +928,8 @@
         <button class="tab-btn" onclick="switchTab('trend-curr')">🔋 Current Trend (A)</button>
         <button class="tab-btn" onclick="switchTab('trend-power')">⚙️ Power Trend (P)</button>
         <button class="tab-btn" onclick="switchTab('modules')">🔌 Rectifier Modules (3)</button>
-        <button class="tab-btn" onclick="switchTab('battery')">🔋 Battery BMS (16S)</button>
+        <button class="tab-btn" onclick="switchTab('t3-battery')" style="color:#38bdf8; font-weight:600;">🔋 T3 Battery Monitor (15S)</button>
+        <button class="tab-btn" onclick="switchTab('battery')">🔋 Megmeet BMS (16S)</button>
         <button class="tab-btn" onclick="switchTab('alarms')">🛡️ Sensors & Alarms (20)</button>
         <button class="tab-btn" onclick="switchTab('network')">🌐 Network & SNMP Config</button>
     </div>
@@ -1282,6 +1284,162 @@
         </div>
     </div>
 
+    <!-- Tab: T3 Battery Monitor -->
+    <div id="tab-t3-battery" class="tab-pane">
+        <div class="panel">
+            <div class="panel-header" style="flex-wrap: wrap; gap: 0.75rem;">
+                <div>
+                    <div class="panel-title">🔋 T3 Battery Monitor (15S Lithium BMS)</div>
+                    <div style="font-size:0.8rem; color:var(--text-muted); margin-top:0.25rem;">
+                        Model: <span id="t3-model" style="color:#38bdf8;">ZXDUPA-BCUA (V1.0)</span> | S/N: <span id="t3-sn">219579918809</span> | IP: <span style="color:#38bdf8;">10.237.77.208:161</span> (PowerPub)
+                    </div>
+                </div>
+                <div style="display:flex; align-items:center; gap:0.5rem;">
+                    <span class="badge badge-success" id="t3-status-badge">Online / Floating</span>
+                    <span class="badge" style="background:rgba(56,189,248,0.15); color:#38bdf8; border:1px solid rgba(56,189,248,0.3);">LiFePO4 15S</span>
+                </div>
+            </div>
+
+            <!-- T3 Top Metric Cards -->
+            <div class="flow-grid" style="margin-bottom:1.5rem;">
+                <div class="flow-card">
+                    <h3>⚡ Voltage & Bus</h3>
+                    <div class="stat-row">
+                        <span class="stat-label">Pack Voltage</span>
+                        <span class="stat-val highlight-cyan" id="t3-pack-v">-- V</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">External Bus</span>
+                        <span class="stat-val highlight-cyan" id="t3-ext-v">-- V</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Charge / Bus Current</span>
+                        <span class="stat-val" id="t3-pack-i">-- A</span>
+                    </div>
+                </div>
+
+                <div class="flow-card">
+                    <h3>🔋 Battery Health</h3>
+                    <div class="stat-row">
+                        <span class="stat-label">State of Charge (SOC)</span>
+                        <span class="stat-val highlight-green" id="t3-soc">-- %</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">State of Health (SOH)</span>
+                        <span class="stat-val highlight-green" id="t3-soh">-- %</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Cycle Count</span>
+                        <span class="stat-val" id="t3-cycle">-- cycles</span>
+                    </div>
+                </div>
+
+                <div class="flow-card">
+                    <h3>⚖️ Cell Balance</h3>
+                    <div class="stat-row">
+                        <span class="stat-label">Delta Spread</span>
+                        <span class="stat-val highlight-green" id="t3-delta">-- mV</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Min - Max Cell</span>
+                        <span class="stat-val" id="t3-min-max">-- V</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Balance Status</span>
+                        <span class="stat-val highlight-green" id="t3-balance-status">✓ Balanced</span>
+                    </div>
+                </div>
+
+                <div class="flow-card">
+                    <h3>🌡️ Temperatures & System</h3>
+                    <div class="stat-row">
+                        <span class="stat-label">Ambient Temp</span>
+                        <span class="stat-val highlight-cyan" id="t3-amb-temp">-- °C</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Cell Avg Temp</span>
+                        <span class="stat-val" id="t3-avg-temp">-- °C</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Brand / Vendor</span>
+                        <span class="stat-val" id="t3-brand">PACO CASA</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- T3 15-Cell Voltage Distribution -->
+            <div style="margin-bottom:1.5rem;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+                    <h4 style="margin:0; color:var(--text-muted); font-size:0.95rem;">
+                        ⚡ 15 Individual Lithium Cell Voltages (V)
+                    </h4>
+                    <span style="font-size:0.8rem; color:#38bdf8;">Nominal 3.2V / Max 3.65V (Tolerance &lt; 20mV)</span>
+                </div>
+                <div class="cell-grid" id="t3-cells-container">
+                    <!-- Injected dynamically -->
+                </div>
+            </div>
+
+            <!-- T3 Sensor Chips & Hardware Details -->
+            <div class="flow-grid">
+                <div class="flow-card">
+                    <h3>🌡️ Cell Temperature Sensors</h3>
+                    <div class="sensor-grid" id="t3-temps-container" style="margin-top:0.75rem;">
+                        <!-- Injected dynamically -->
+                    </div>
+                </div>
+                <div class="flow-card">
+                    <h3>⚙️ Hardware & Network Specs</h3>
+                    <div class="stat-row">
+                        <span class="stat-label">Firmware Version</span>
+                        <span class="stat-val" id="t3-fw">V1.00.00.23</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">MAC Address</span>
+                        <span class="stat-val" id="t3-mac">84-13-9F-CB-D1-F0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">SNMP Interface</span>
+                        <span class="stat-val">UDP 161 (Community: PowerPub)</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Web Console</span>
+                        <span class="stat-val">HTTPS Port 443 (Server: zte_power)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- T3 Battery Monitor Card -->
+            <div class="flow-card" style="border-color: rgba(56, 189, 248, 0.35); background: linear-gradient(135deg, rgba(15, 23, 42, 0.8) 0%, rgba(14, 165, 233, 0.1) 100%);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+                    <h3 style="margin:0; color:#38bdf8; font-size:1.05rem;">🔋 T3 Battery Monitor</h3>
+                    <span class="badge badge-success" style="font-size:0.72rem;">10.237.77.208</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Pack Voltage</span>
+                    <span class="stat-val highlight-cyan" id="ov-t3-volt">-- V</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Battery SOC</span>
+                    <span class="stat-val highlight-green" id="ov-t3-soc">-- %</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Cell Delta Spread</span>
+                    <span class="stat-val highlight-green" id="ov-t3-delta">-- mV</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Ambient Temp</span>
+                    <span class="stat-val" id="ov-t3-temp">-- °C</span>
+                </div>
+                <div style="margin-top:0.75rem; text-align:right;">
+                    <button type="button" class="tab-btn" onclick="switchTab('t3-battery')" style="padding:0.35rem 0.75rem; font-size:0.78rem; background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.4); color:#38bdf8; border-radius:6px; cursor:pointer;">
+                        View 15S Details →
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Tab 4: Alarms & Sensors -->
     <div id="tab-alarms" class="tab-pane">
         <div class="panel">
@@ -1433,6 +1591,47 @@
   "environment": {
     "cabinet_temp": 25,
     "cabinet_humidity": 77
+  },
+  "t3_battery": {
+    "name": "T3 Battery monitor",
+    "ip": "10.237.77.208",
+    "snmp_port": 161,
+    "community": "PowerPub",
+    "model": "ZXDUPA-BCUA (V1.0)",
+    "brand": "PACO CASA",
+    "serial": "219579918809",
+    "firmware": "V1.00.00.23",
+    "mac": "84-13-9F-CB-D1-F0",
+    "status": "Online / Floating",
+    "pack_voltage": 49.32,
+    "external_voltage": 49.34,
+    "pack_current": -0.01,
+    "bus_current": -0.01,
+    "soc": 56.0,
+    "soh": 100,
+    "cycle_count": 1,
+    "ambient_temp": 30.6,
+    "cell_temps": [25.3, 25.5, 25.3, 25.1],
+    "cells": [
+      { "cell": 1, "voltage": 3.289 },
+      { "cell": 2, "voltage": 3.289 },
+      { "cell": 3, "voltage": 3.288 },
+      { "cell": 4, "voltage": 3.288 },
+      { "cell": 5, "voltage": 3.288 },
+      { "cell": 6, "voltage": 3.288 },
+      { "cell": 7, "voltage": 3.288 },
+      { "cell": 8, "voltage": 3.288 },
+      { "cell": 9, "voltage": 3.289 },
+      { "cell": 10, "voltage": 3.288 },
+      { "cell": 11, "voltage": 3.288 },
+      { "cell": 12, "voltage": 3.288 },
+      { "cell": 13, "voltage": 3.288 },
+      { "cell": 14, "voltage": 3.288 },
+      { "cell": 15, "voltage": 3.289 }
+    ],
+    "cell_min": 3.288,
+    "cell_max": 3.289,
+    "cell_delta_mv": 1
   },
   "alarms": {
     "active_count": 0,
@@ -1641,6 +1840,78 @@
         }
 
         // Update Charts and Trend Badges
+        // T3 Battery Monitor dynamic render
+        const t3 = d.t3_battery || (initialData ? initialData.t3_battery : null);
+        if (t3) {
+            $('#t3-pack-v').text((t3.pack_voltage ?? '--') + ' V');
+            $('#t3-ext-v').text((t3.external_voltage ?? '--') + ' V');
+            $('#t3-pack-i').text((t3.pack_current ?? '--') + ' A');
+            $('#t3-soc').text((t3.soc ?? '--') + ' %');
+            $('#t3-soh').text((t3.soh ?? '--') + ' %');
+            $('#t3-cycle').text((t3.cycle_count ?? '--') + ' cycles');
+            $('#t3-amb-temp').text((t3.ambient_temp ?? '--') + ' °C');
+            $('#t3-delta').text((t3.cell_delta_mv ?? '--') + ' mV');
+            $('#t3-min-max').text(`${t3.cell_min ?? '--'}V - ${t3.cell_max ?? '--'}V`);
+            $('#t3-model').text(t3.model || 'ZXDUPA-BCUA (V1.0)');
+            $('#t3-brand').text(t3.brand || 'PACO CASA');
+            $('#t3-sn').text(t3.serial || '--');
+            $('#t3-fw').text(t3.firmware || '--');
+            $('#t3-mac').text(t3.mac || '--');
+            $('#t3-status-badge').text(t3.status || 'Online / Floating');
+
+            if (t3.cell_delta_mv !== undefined) {
+                const balText = t3.cell_delta_mv <= 15 ? '✓ Excellent' : (t3.cell_delta_mv <= 30 ? '⚠ Acceptable' : '⚡ Imbalanced');
+                $('#t3-balance-status').text(balText);
+            }
+
+            // Render T3 Cells (15 Cells)
+            if (t3.cells && t3.cells.length > 0) {
+                let t3CellsHtml = '';
+                t3.cells.forEach(c => {
+                    const v = c.voltage || 0;
+                    const h = Math.max(15, Math.min(100, Math.round(((v - 3.0) / 0.45) * 100)));
+                    t3CellsHtml += `
+                    <div class="cell-box">
+                        <div class="cell-num">C${String(c.cell).padStart(2,'0')}</div>
+                        <div class="cell-bar-wrap">
+                            <div class="cell-bar" style="height: ${h}%; background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%);"></div>
+                        </div>
+                        <div class="cell-volt" style="color:#38bdf8; font-weight:600;">${v.toFixed(3)}V</div>
+                    </div>`;
+                });
+                $('#t3-cells-container').html(t3CellsHtml);
+            }
+
+            // Render T3 Cell Temperatures
+            if (t3.cell_temps && t3.cell_temps.length > 0) {
+                let tempsHtml = '';
+                let tSum = 0;
+                t3.cell_temps.forEach((temp, idx) => {
+                    tSum += temp;
+                    tempsHtml += `
+                    <div class="sensor-chip sensor-ok" style="padding:0.6rem 0.8rem;">
+                        <span class="led led-green"></span>
+                        <span class="sensor-name">Cell Temp #${idx + 1}</span>
+                        <span class="sensor-status" style="color:var(--cyan);font-weight:600;">${temp} °C</span>
+                    </div>`;
+                });
+                tempsHtml += `
+                <div class="sensor-chip sensor-ok" style="padding:0.6rem 0.8rem;">
+                    <span class="led led-green"></span>
+                    <span class="sensor-name">Ambient Sensor</span>
+                    <span class="sensor-status" style="color:#f59e0b;font-weight:600;">${t3.ambient_temp} °C</span>
+                </div>`;
+                $('#t3-temps-container').html(tempsHtml);
+                $('#t3-avg-temp').text((tSum / t3.cell_temps.length).toFixed(1) + ' °C');
+            }
+
+            // Overview Mini-Card update
+            $('#ov-t3-volt').text((t3.pack_voltage ?? '--') + ' V');
+            $('#ov-t3-soc').text((t3.soc ?? '--') + ' %');
+            $('#ov-t3-delta').text((t3.cell_delta_mv ?? '--') + ' mV');
+            $('#ov-t3-temp').text((t3.ambient_temp ?? '--') + ' °C');
+        }
+
         renderTrendCharts(d.history, d);
     }
 
@@ -2084,7 +2355,12 @@
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
         
-        event.target.classList.add('active');
+        document.querySelectorAll('.tab-btn').forEach(b => {
+            const oc = b.getAttribute('onclick') || '';
+            if (oc.includes("'" + tabId + "'")) {
+                b.classList.add('active');
+            }
+        });
         const target = document.getElementById('tab-' + tabId);
         if (target) {
             target.classList.add('active');

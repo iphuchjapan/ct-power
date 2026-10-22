@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔋 T3 Battery Monitor - Telecom LiFePO4 BMS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #090d16;
+            --bg-card: rgba(15, 23, 42, 0.75);
+            --bg-card-hover: rgba(30, 41, 59, 0.85);
+            --border: rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(56, 189, 248, 0.4);
+            --cyan: #38bdf8;
+            --green: #10b981;
+            --yellow: #f59e0b;
+            --rose: #f43f5e;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 1.5rem;
+            background-image: 
+                radial-gradient(at 10% 20%, rgba(56, 189, 248, 0.07) 0px, transparent 50%),
+                radial-gradient(at 90% 80%, rgba(16, 185, 129, 0.06) 0px, transparent 50%);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header Bar */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.25rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header-title-box h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .header-title-box p {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            margin-top: 0.35rem;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-nav {
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .btn-nav:hover {
+            background: rgba(56, 189, 248, 0.15);
+            border-color: var(--cyan);
+            color: var(--cyan);
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.35rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .badge-cyan {
+            background: rgba(56, 189, 248, 0.15);
+            color: #38bdf8;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+
+        /* KPI Cards Grid */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .kpi-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            backdrop-filter: blur(12px);
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--border-hover);
+        }
+
+        .kpi-label {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .kpi-val {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: -0.02em;
+        }
+
+        .kpi-sub {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-top: auto;
+        }
+
+        .val-cyan { color: var(--cyan); }
+        .val-green { color: #34d399; }
+        .val-yellow { color: var(--yellow); }
+
+        /* Panel Box */
+        .panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            backdrop-filter: blur(12px);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .panel-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* 15 Cells Grid */
+        .cell-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .cell-box {
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+            padding: 0.75rem 0.4rem;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .cell-box:hover {
+            border-color: var(--cyan);
+            background: rgba(56, 189, 248, 0.06);
+            transform: scale(1.03);
+        }
+
+        .cell-num {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .cell-bar-wrap {
+            width: 14px;
+            height: 52px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 6px;
+            overflow: hidden;
+            display: flex;
+            align-items: flex-end;
+            padding: 2px;
+        }
+
+        .cell-bar {
+            width: 100%;
+            border-radius: 4px;
+            background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%);
+            transition: height 0.5s ease;
+        }
+
+        .cell-volt {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #38bdf8;
+        }
+
+        /* Sensors Grid */
+        .sensor-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .sensor-chip {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .sensor-name {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .sensor-val {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .led-green {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10b981;
+            box-shadow: 0 0 8px #10b981;
+            display: inline-block;
+        }
+
+        /* Detail Tables */
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .info-table tr {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .info-table td {
+            padding: 0.65rem 0.25rem;
+            font-size: 0.85rem;
+        }
+
+        .info-table td:first-child {
+            color: var(--text-muted);
+            width: 45%;
+        }
+
+        .info-table td:last-child {
+            color: #fff;
+            font-weight: 600;
+            text-align: right;
+        }
+
+        .highlight-cyan { color: var(--cyan) !important; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-title-box">
+                <h1>🔋 T3 Battery Monitor <span class="badge badge-success" id="t3-badge-status">Online / Floating</span></h1>
+                <p>PACO CASA / ZTE Telecom LiFePO4 Battery Management System (ZXDUPA-BCUA)</p>
+            </div>
+            <div class="header-actions">
+                <span class="badge badge-cyan" id="t3-badge-ip">IP: 10.237.77.208:161 (PowerPub)</span>
+                <span class="badge" style="background:rgba(255,255,255,0.05); color:#94a3b8;" id="t3-last-update">Updating...</span>
+                <a href="index.html" class="btn-nav">⚡ Megmeet Rectifier</a>
+                <a href="megmeet_rectifier_history.html" class="btn-nav">📊 History Logs</a>
+            </div>
+        </header>
+
+        <!-- KPI Grid -->
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-label">Pack Voltage</div>
+                <div class="kpi-val val-cyan" id="kpi-pack-v">49.32 <span style="font-size:1rem;color:var(--text-muted);">VDC</span></div>
+                <div class="kpi-sub">External Bus: <span id="kpi-ext-v" style="color:#fff;font-weight:600;">49.34 V</span></div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-label">Current Flow</div>
+                <div class="kpi-val" id="kpi-curr">-0.01 <span style="font-size:1rem;color:var(--text-muted);">A</span></div>
+                <div class="kpi-sub">Bus Current: <span id="kpi-bus-curr" style="color:#fff;font-weight:600;">-0.01 A</span></div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-label">State of Charge (SOC)</div>
+                <div class="kpi-val val-green" id="kpi-soc">56.0 <span style="font-size:1rem;color:var(--text-muted);">%</span></div>
+                <div class="kpi-sub">Lithium Storage: Normal</div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-label">State of Health (SOH)</div>
+                <div class="kpi-val val-green" id="kpi-soh">100 <span style="font-size:1rem;color:var(--text-muted);">%</span></div>
+                <div class="kpi-sub">Full Capacity Available</div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-label">Cell Delta Balance</div>
+                <div class="kpi-val val-green" id="kpi-delta">1 <span style="font-size:1rem;color:var(--text-muted);">mV</span></div>
+                <div class="kpi-sub" id="kpi-min-max">3.288V - 3.289V (✓ Excellent)</div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-label">Ambient Temp</div>
+                <div class="kpi-val val-cyan" id="kpi-amb-temp">30.6 <span style="font-size:1rem;color:var(--text-muted);">°C</span></div>
+                <div class="kpi-sub">Cycle Count: <span id="kpi-cycle" style="color:#fff;font-weight:600;">1 cycles</span></div>
+            </div>
+        </div>
+
+        <!-- 15 Individual Cells Grid -->
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-title">⚡ 15 Individual Lithium Cell Voltages (V)</div>
+                <span class="badge badge-cyan" id="badge-balance">Delta: 1 mV (15S Balanced)</span>
+            </div>
+            <div class="cell-grid" id="t3-cells-container">
+                <!-- Injected via JavaScript -->
+            </div>
+        </div>
+
+        <!-- Bottom Grid: Sensors & Specs -->
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap:1.5rem;">
+            <!-- Temperature Sensors -->
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">🌡️ Thermal Sensors</div>
+                    <span class="badge badge-success">4 Sensors Normal</span>
+                </div>
+                <div class="sensor-grid" id="t3-temps-container">
+                    <!-- Injected via JavaScript -->
+                </div>
+            </div>
+
+            <!-- Hardware & Network Specifications -->
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">⚙️ Device & SNMP Information</div>
+                    <span class="badge badge-cyan">SNMPv2c Active</span>
+                </div>
+                <table class="info-table">
+                    <tr><td>Device Model</td><td class="highlight-cyan" id="spec-model">ZXDUPA-BCUA (V1.0)</td></tr>
+                    <tr><td>Brand / Vendor</td><td id="spec-brand">PACO CASA / ZTE Power</td></tr>
+                    <tr><td>Serial Number</td><td id="spec-sn">219579918809</td></tr>
+                    <tr><td>Firmware Version</td><td id="spec-fw">V1.00.00.23</td></tr>
+                    <tr><td>MAC Address</td><td id="spec-mac">84-13-9F-CB-D1-F0</td></tr>
+                    <tr><td>Target SNMP IP</td><td>10.237.77.208:161</td></tr>
+                    <tr><td>Read Community</td><td>PowerPub</td></tr>
+                    <tr><td>Web Management</td><td>HTTPS Port 443</td></tr>
+                    <tr><td>Cumulative Discharge</td><td id="spec-energy">2 kWh</td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script>
+        const initialData = {
+            pack_voltage: 49.32,
+            external_voltage: 49.34,
+            pack_current: -0.01,
+            bus_current: -0.01,
+            soc: 56.0,
+            soh: 100,
+            cycle_count: 1,
+            ambient_temp: 30.6,
+            cell_delta_mv: 1,
+            cell_min: 3.288,
+            cell_max: 3.289,
+            model: "ZXDUPA-BCUA (V1.0)",
+            brand: "PACO CASA",
+            serial: "219579918809",
+            firmware: "V1.00.00.23",
+            mac: "84-13-9F-CB-D1-F0",
+            status: "Online / Floating",
+            cell_temps: [25.3, 25.5, 25.3, 25.1],
+            cells: [
+                { cell: 1, voltage: 3.289 },
+                { cell: 2, voltage: 3.289 },
+                { cell: 3, voltage: 3.288 },
+                { cell: 4, voltage: 3.288 },
+                { cell: 5, voltage: 3.288 },
+                { cell: 6, voltage: 3.288 },
+                { cell: 7, voltage: 3.288 },
+                { cell: 8, voltage: 3.288 },
+                { cell: 9, voltage: 3.289 },
+                { cell: 10, voltage: 3.288 },
+                { cell: 11, voltage: 3.288 },
+                { cell: 12, voltage: 3.288 },
+                { cell: 13, voltage: 3.288 },
+                { cell: 14, voltage: 3.288 },
+                { cell: 15, voltage: 3.289 }
+            ]
+        };
+
+        function renderT3(t3) {
+            if (!t3) return;
+            $('#kpi-pack-v').html(`${t3.pack_voltage ?? '--'} <span style="font-size:1rem;color:var(--text-muted);">VDC</span>`);
+            $('#kpi-ext-v').text(`${t3.external_voltage ?? '--'} V`);
+            $('#kpi-curr').html(`${t3.pack_current ?? '--'} <span style="font-size:1rem;color:var(--text-muted);">A</span>`);
+            $('#kpi-bus-curr').text(`${t3.bus_current ?? '--'} A`);
+            $('#kpi-soc').html(`${t3.soc ?? '--'} <span style="font-size:1rem;color:var(--text-muted);">%</span>`);
+            $('#kpi-soh').html(`${t3.soh ?? '--'} <span style="font-size:1rem;color:var(--text-muted);">%</span>`);
+            $('#kpi-delta').html(`${t3.cell_delta_mv ?? '--'} <span style="font-size:1rem;color:var(--text-muted);">mV</span>`);
+            $('#kpi-min-max').text(`${t3.cell_min ?? '--'}V - ${t3.cell_max ?? '--'}V (✓ Excellent)`);
+            $('#kpi-amb-temp').html(`${t3.ambient_temp ?? '--'} <span style="font-size:1rem;color:var(--text-muted);">°C</span>`);
+            $('#kpi-cycle').text(`${t3.cycle_count ?? '--'} cycles`);
+
+            $('#spec-model').text(t3.model || 'ZXDUPA-BCUA (V1.0)');
+            $('#spec-brand').text(t3.brand || 'PACO CASA / ZTE Power');
+            $('#spec-sn').text(t3.serial || '--');
+            $('#spec-fw').text(t3.firmware || '--');
+            $('#spec-mac').text(t3.mac || '--');
+            $('#badge-balance').text(`Delta: ${t3.cell_delta_mv ?? 1} mV (15S Balanced)`);
+            $('#t3-badge-status').text(t3.status || 'Online / Floating');
+
+            // Render Cells
+            if (t3.cells && t3.cells.length > 0) {
+                let html = '';
+                t3.cells.forEach(c => {
+                    const v = c.voltage || 0;
+                    const h = Math.max(15, Math.min(100, Math.round(((v - 3.0) / 0.45) * 100)));
+                    html += `
+                    <div class="cell-box">
+                        <div class="cell-num">C${String(c.cell).padStart(2,'0')}</div>
+                        <div class="cell-bar-wrap">
+                            <div class="cell-bar" style="height: ${h}%;"></div>
+                        </div>
+                        <div class="cell-volt">${v.toFixed(3)}V</div>
+                    </div>`;
+                });
+                $('#t3-cells-container').html(html);
+            }
+
+            // Render Temps
+            if (t3.cell_temps && t3.cell_temps.length > 0) {
+                let html = '';
+                t3.cell_temps.forEach((t, i) => {
+                    html += `
+                    <div class="sensor-chip">
+                        <span class="sensor-name"><span class="led-green"></span> Cell Temp #${i + 1}</span>
+                        <span class="sensor-val highlight-cyan">${t} °C</span>
+                    </div>`;
+                });
+                html += `
+                <div class="sensor-chip">
+                    <span class="sensor-name"><span class="led-green"></span> Ambient Sensor</span>
+                    <span class="sensor-val" style="color:var(--yellow);">${t3.ambient_temp} °C</span>
+                </div>`;
+                $('#t3-temps-container').html(html);
+            }
+
+            const now = new Date();
+            $('#t3-last-update').text(now.toLocaleTimeString('th-TH'));
+        }
+
+        function fetchLive() {
+            $.getJSON('megmeet_rectifier_data.json?_t=' + Date.now(), function(data) {
+                if (data && data.t3_battery) {
+                    renderT3(data.t3_battery);
+                } else {
+                    $.getJSON('zte_battery_data.json?_t=' + Date.now(), function(zte) {
+                        if (zte) renderT3(zte);
+                    });
+                }
+            }).fail(function() {
+                $.getJSON('zte_battery_data.json?_t=' + Date.now(), function(zte) {
+                    if (zte) renderT3(zte);
+                });
+            });
+        }
+
+        // Initialize with default
+        renderT3(initialData);
+        fetchLive();
+        setInterval(fetchLive, 5000);
+    </script>
+</body>
+</html>
