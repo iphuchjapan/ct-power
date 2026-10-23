@@ -5,7 +5,7 @@
 > **วัตถุประสงค์:** ใช้สำหรับกำหนดค่าและพัฒนา SNMP Server, Poller Daemon, Time-Series Ingestion และสร้าง Auto Dashboard สำหรับระบบมอนิเตอร์แบตเตอรี่สำรอง  
 > **จัดทำเมื่อ:** 23 ตุลาคม 2569  
 > **อุปกรณ์เป้าหมาย:** T3 Battery Monitor (Model: `ZXDUPA-BCUA V1.0` / Brand: `PACO CASA - ZTE Power`)  
-> **เป้าหมาย IP:** `10.237.77.208:161` (เข้าถึงผ่าน PMS Jumphost `10.50.238.195:22`)
+> **เป้าหมาย IP:** `10.237.77.208:161` (เข้าถึงผ่าน SNMP server)
 
 ---
 
@@ -13,9 +13,6 @@
 
 ```
 [ SNMP Monitoring Server / Ingestion ]
-                 │ (SSH2 Tunnel / Hop)
-                 ▼
-     [ PMS Jumphost: 10.50.238.195:22 ]
                  │ (UDP 161 - Community: PowerPub)
                  ▼
 [ T3 Battery Monitor: 10.237.77.208:161 ]
