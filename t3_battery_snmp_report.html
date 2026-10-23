@@ -4,42 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>เอกสารข้อกำหนดทางเทคนิค SNMP: T3 Battery Monitor (PACO CASA / ZTE 15S BMS)</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #0284c7;
-            --primary-light: #38bdf8;
-            --bg-page: #0f172a;
-            --bg-card: #1e293b;
-            --border: #334155;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --green: #10b981;
-            --yellow: #f59e0b;
-        }
-
         * { box-sizing: border-box; margin: 0; padding: 0; }
+        
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-page);
-            color: var(--text-main);
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Tahoma', sans-serif;
+            background-color: #f1f5f9;
+            color: #000000;
             line-height: 1.6;
-            padding: 2.5rem 1.5rem;
+            padding: 2rem 1rem;
+            font-size: 14.5px;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
         }
 
         .container {
             max-width: 1100px;
             margin: 0 auto;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
             padding: 2.5rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
         }
 
         header {
-            border-bottom: 2px solid var(--border);
-            padding-bottom: 1.5rem;
+            border-bottom: 3px solid #0f172a;
+            padding-bottom: 1.25rem;
             margin-bottom: 2rem;
             display: flex;
             justify-content: space-between;
@@ -49,150 +40,224 @@
         }
 
         .header-title h1 {
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
+            font-size: 1.85rem;
+            font-weight: 800;
+            color: #0f172a;
+            letter-spacing: -0.5px;
         }
 
         .header-title p {
-            color: var(--text-muted);
+            color: #334155;
             margin-top: 0.4rem;
-            font-size: 0.95rem;
+            font-size: 1rem;
+            font-weight: 500;
         }
 
         .btn-print {
-            padding: 0.5rem 1rem;
-            background: rgba(56, 189, 248, 0.15);
-            border: 1px solid var(--primary-light);
-            color: var(--primary-light);
-            border-radius: 8px;
-            font-size: 0.85rem;
-            font-weight: 600;
+            padding: 0.6rem 1.2rem;
+            background: #0284c7;
+            border: none;
+            color: #ffffff;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 700;
             cursor: pointer;
+            box-shadow: 0 2px 6px rgba(2, 132, 199, 0.3);
             transition: all 0.2s;
         }
 
         .btn-print:hover {
-            background: var(--primary-light);
-            color: #0f172a;
+            background: #0369a1;
         }
 
         h2 {
-            font-size: 1.3rem;
-            font-weight: 600;
-            color: var(--primary-light);
-            margin: 2rem 0 1rem 0;
-            padding-bottom: 0.4rem;
-            border-bottom: 1px solid var(--border);
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin: 2.2rem 0 1rem 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e2e8f0;
             display: flex;
             align-items: center;
             gap: 0.5rem;
         }
 
-        h3 {
-            font-size: 1.05rem;
-            color: #fff;
-            margin: 1.25rem 0 0.5rem 0;
-        }
-
         p, ul, ol {
-            color: #cbd5e1;
+            color: #0f172a;
             margin-bottom: 1rem;
-            font-size: 0.95rem;
+            font-size: 14.5px;
         }
 
         ul, ol {
             padding-left: 1.5rem;
         }
 
-        li { margin-bottom: 0.35rem; }
+        li { margin-bottom: 0.4rem; }
 
         .callout {
-            background: rgba(56, 189, 248, 0.08);
-            border-left: 4px solid var(--primary-light);
-            padding: 1rem 1.25rem;
-            border-radius: 0 8px 8px 0;
-            margin-bottom: 1.5rem;
+            background: #f0f9ff;
+            border-left: 5px solid #0284c7;
+            border-top: 1px solid #bae6fd;
+            border-right: 1px solid #bae6fd;
+            border-bottom: 1px solid #bae6fd;
+            padding: 1.1rem 1.3rem;
+            border-radius: 6px;
+            margin-bottom: 1.75rem;
+            color: #0c4a6e;
         }
 
         .callout-title {
-            font-weight: 600;
-            color: var(--primary-light);
-            margin-bottom: 0.3rem;
+            font-weight: 800;
+            color: #0369a1;
+            margin-bottom: 0.35rem;
+            font-size: 1.05rem;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 1.5rem;
-            background: rgba(15, 23, 42, 0.5);
-            border-radius: 8px;
+            margin-bottom: 1.75rem;
+            background: #ffffff;
+            border: 1.5px solid #64748b;
+            border-radius: 6px;
             overflow: hidden;
-            font-size: 0.9rem;
+            font-size: 13.5px;
+            page-break-inside: avoid;
         }
 
         th, td {
-            padding: 0.75rem 1rem;
+            padding: 0.65rem 0.85rem;
             text-align: left;
-            border-bottom: 1px solid var(--border);
+            border: 1px solid #94a3b8;
+            vertical-align: middle;
         }
 
         th {
-            background: rgba(30, 41, 59, 0.9);
-            color: #fff;
-            font-weight: 600;
+            background: #1e293b;
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 13.5px;
+            letter-spacing: 0.2px;
         }
 
-        tr:last-child td { border-bottom: none; }
-        tr:hover td { background: rgba(255, 255, 255, 0.02); }
+        td {
+            color: #000000;
+            font-weight: 500;
+        }
 
+        tr:nth-child(even) td {
+            background-color: #f8fafc;
+        }
+
+        /* OID and Inline Code Styling - Ultra Sharp Pitch Black */
         code {
-            font-family: 'Fira Code', monospace;
-            background: rgba(0, 0, 0, 0.35);
-            padding: 0.15rem 0.4rem;
+            font-family: 'Consolas', 'Courier New', monospace;
+            background: #f1f5f9;
+            color: #000000 !important;
+            font-weight: 700 !important;
+            font-size: 13px;
+            padding: 2px 6px;
             border-radius: 4px;
-            color: #38bdf8;
-            font-size: 0.88em;
+            border: 1px solid #94a3b8;
+            display: inline-block;
+            letter-spacing: -0.2px;
+        }
+
+        /* Value Highlight */
+        .val-highlight {
+            font-weight: 800;
+            color: #000000;
         }
 
         pre {
-            background: #090d16;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 1rem;
+            background: #f8fafc;
+            border: 1.5px solid #64748b;
+            border-radius: 6px;
+            padding: 1.1rem;
             overflow-x: auto;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.75rem;
+            page-break-inside: avoid;
         }
 
         pre code {
-            background: none;
+            background: none !important;
+            border: none !important;
             padding: 0;
-            color: #e2e8f0;
-            font-size: 0.85rem;
+            color: #000000 !important;
+            font-weight: 600 !important;
+            font-size: 13px;
+            line-height: 1.5;
+            display: block;
         }
 
         .badge {
             display: inline-block;
-            padding: 0.2rem 0.5rem;
-            border-radius: 9999px;
-            font-size: 0.75rem;
-            font-weight: 600;
+            padding: 0.25rem 0.6rem;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 800;
+            border: 1px solid #64748b;
         }
-        .badge-green { background: rgba(16, 185, 129, 0.15); color: #34d399; }
-        .badge-blue { background: rgba(56, 189, 248, 0.15); color: #38bdf8; }
+        .badge-green { background: #dcfce7; color: #14532d; border-color: #86efac; }
+        .badge-yellow { background: #fef3c7; color: #78350f; border-color: #fde047; }
+        .badge-red { background: #fee2e2; color: #7f1d1d; border-color: #fca5a5; }
 
         @media print {
-            body { background: #fff; color: #000; padding: 0; }
-            .container { box-shadow: none; border: none; padding: 0; max-width: 100%; background: #fff; }
-            .btn-print { display: none; }
-            table { background: #fff; border: 1px solid #ccc; font-size: 11px; }
-            th { background: #eee; color: #000; border: 1px solid #ccc; }
-            td { border: 1px solid #ccc; color: #000; }
-            h1, h2, h3 { color: #000; }
-            code, pre { background: #f5f5f5; color: #000; border: 1px solid #ddd; }
+            body {
+                background: #ffffff !important;
+                color: #000000 !important;
+                padding: 0 !important;
+                font-size: 12px !important;
+            }
+            .container {
+                box-shadow: none !important;
+                border: none !important;
+                padding: 0 !important;
+                max-width: 100% !important;
+                background: #ffffff !important;
+            }
+            .btn-print { display: none !important; }
+            table {
+                font-size: 11px !important;
+                border: 1.5px solid #000000 !important;
+                margin-bottom: 1.2rem !important;
+            }
+            th {
+                background: #e2e8f0 !important;
+                color: #000000 !important;
+                border: 1px solid #000000 !important;
+                font-weight: 800 !important;
+            }
+            td {
+                border: 1px solid #475569 !important;
+                color: #000000 !important;
+            }
+            tr:nth-child(even) td {
+                background-color: #f8fafc !important;
+            }
+            h1, h2, h3 {
+                color: #000000 !important;
+            }
+            h2 {
+                margin: 1.2rem 0 0.6rem 0 !important;
+                border-bottom: 1.5px solid #000000 !important;
+            }
+            code {
+                background: #f1f5f9 !important;
+                color: #000000 !important;
+                border: 1px solid #64748b !important;
+                font-weight: 700 !important;
+                font-size: 11px !important;
+            }
+            pre {
+                background: #f8fafc !important;
+                border: 1.5px solid #000000 !important;
+                padding: 0.8rem !important;
+            }
+            pre code {
+                font-size: 10.5px !important;
+                color: #000000 !important;
+            }
         }
     </style>
 </head>
@@ -215,76 +280,96 @@
 
         <h2>1. ข้อมูลการเชื่อมต่อเครือข่าย (Connection & Authentication Profile)</h2>
         <table>
-            <tr><th>พารามิเตอร์</th><th>ค่าคอนฟิก (Value)</th><th>คำอธิบาย</th></tr>
-            <tr><td>Target IP</td><td><code>10.237.77.208</code></td><td>เข้าถึงผ่าน SNMP server</td></tr>
-            <tr><td>SNMP Port</td><td>UDP <code>161</code></td><td>พอร์ต SNMP มาตรฐาน</td></tr>
-            <tr><td>SNMP Version</td><td><code>v2c</code></td><td>แนะนำให้ใช้ SNMPv2c เป็นหลัก</td></tr>
-            <tr><td>Read Community</td><td><code>PowerPub</code></td><td><strong>Case-sensitive:</strong> ต้องใช้ตัวพิมพ์เล็ก-ใหญ่ตามนี้</td></tr>
-            <tr><td>Write Community</td><td><code>PowerPri</code></td><td>สำหรับตั้งค่า/เขียนพารามิเตอร์</td></tr>
-            <tr><td>Enterprise MIB Prefix</td><td><code>.1.3.6.1.4.1.3902.2800</code></td><td>Enterprise MIB Subtree ของ ZTE Power / PACO CASA</td></tr>
-            <tr><td>Polling Cadence</td><td>60 - 300 วินาที</td><td>แนะนำดึงทุก 1 ถึง 5 นาที เพื่อไม่ให้รบกวน CPU อุปกรณ์</td></tr>
-            <tr><td>Secondary Fallback</td><td>HTTPS POST <code>/cgi-bin/main.fcgi</code></td><td>รองรับการดึงข้อมูล JSON ตรงผ่าน Web API โดยไม่ต้อง Login</td></tr>
+            <thead>
+                <tr><th style="width:25%;">พารามิเตอร์</th><th style="width:30%;">ค่าคอนฟิก (Value)</th><th>คำอธิบาย</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>Target IP</strong></td><td><code>10.237.77.208</code></td><td>เข้าถึงผ่าน SNMP server</td></tr>
+                <tr><td><strong>SNMP Port</strong></td><td>UDP <code>161</code></td><td>พอร์ต SNMP มาตรฐาน</td></tr>
+                <tr><td><strong>SNMP Version</strong></td><td><code>v2c</code></td><td>แนะนำให้ใช้ SNMPv2c เป็นหลัก</td></tr>
+                <tr><td><strong>Read Community</strong></td><td><code>PowerPub</code></td><td><strong>Case-sensitive:</strong> ต้องใช้ตัวพิมพ์เล็ก-ใหญ่ตามนี้</td></tr>
+                <tr><td><strong>Write Community</strong></td><td><code>PowerPri</code></td><td>สำหรับตั้งค่า/เขียนพารามิเตอร์</td></tr>
+                <tr><td><strong>Enterprise MIB Prefix</strong></td><td><code>.1.3.6.1.4.1.3902.2800</code></td><td>Enterprise MIB Subtree ของ ZTE Power / PACO CASA</td></tr>
+                <tr><td><strong>Polling Cadence</strong></td><td><strong>60 - 300 วินาที</strong></td><td>แนะนำดึงทุก 1 ถึง 5 นาที เพื่อไม่ให้รบกวน CPU อุปกรณ์</td></tr>
+                <tr><td><strong>Secondary Fallback</strong></td><td>HTTPS POST <code>/cgi-bin/main.fcgi</code></td><td>รองรับการดึงข้อมูล JSON ตรงผ่าน Web API โดยไม่ต้อง Login</td></tr>
+            </tbody>
         </table>
 
         <h2>2. ตาราง OID ข้อมูลตัวเครื่องและสถานะระบบ (Metadata & Health)</h2>
         <table>
-            <tr><th>ชื่อตัวแปร</th><th>SNMP OID</th><th>Type</th><th>Scale Factor</th><th>ค่าตัวอย่างจริง</th><th>คำอธิบาย</th></tr>
-            <tr><td><code>sys_descr</code></td><td><code>.1.3.6.1.2.1.1.1.0</code></td><td>STRING</td><td>-</td><td><code>Linux 3.2.0 armv7l</code></td><td>ระบบปฏิบัติการภายใน</td></tr>
-            <tr><td><code>sys_uptime</code></td><td><code>.1.3.6.1.2.1.1.3.0</code></td><td>Timeticks</td><td>-</td><td><code>8 days, 00:48:29</code></td><td>ระยะเวลาเปิดเครื่องต่อเนื่อง</td></tr>
-            <tr><td><code>device_model</code></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.1.1.128.0</code></td><td>STRING</td><td>-</td><td><code>"ZXDUPA-BCUA (V1.0)"</code></td><td>รุ่นของบอร์ดควบคุม BMS</td></tr>
-            <tr><td><code>brand_vendor</code></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.1.1.252.0</code></td><td>STRING</td><td>-</td><td><code>"PACO CASA"</code></td><td>แบรนด์ผู้ผลิต</td></tr>
-            <tr><td><code>serial_number</code></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.1.1.13.0</code></td><td>STRING</td><td>-</td><td><code>"219579918809"</code></td><td>หมายเลข Serial Number</td></tr>
-            <tr><td><code>firmware_ver</code></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.1.1.243.0</code></td><td>STRING</td><td>-</td><td><code>"V1.00.00.23"</code></td><td>เวอร์ชัน Firmware</td></tr>
-            <tr><td><code>mac_address</code></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.1.1.244.0</code></td><td>STRING</td><td>-</td><td><code>"84-13-9F-CB-D1-F0"</code></td><td>MAC Address</td></tr>
-            <tr><td><code>cpu_usage</code></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.1.53.0</code></td><td>INTEGER</td><td><strong>÷ 100</strong></td><td><code>1790</code> → <strong>17.90 %</strong></td><td>CPU Utilization</td></tr>
-            <tr><td><code>ram_usage</code></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.1.54.0</code></td><td>INTEGER</td><td><strong>÷ 100</strong></td><td><code>2604</code> → <strong>26.04 %</strong></td><td>RAM Utilization</td></tr>
+            <thead>
+                <tr><th style="width:16%;">ชื่อตัวแปร</th><th style="width:36%;">SNMP OID</th><th style="width:10%;">Type</th><th style="width:12%;">Scale Factor</th><th style="width:14%;">ค่าตัวอย่างจริง</th><th>คำอธิบาย</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>sys_descr</strong></td><td><code>.1.3.6.1.2.1.1.1.0</code></td><td>STRING</td><td>-</td><td><code>Linux 3.2.0 armv7l</code></td><td>ระบบปฏิบัติการภายใน</td></tr>
+                <tr><td><strong>sys_uptime</strong></td><td><code>.1.3.6.1.2.1.1.3.0</code></td><td>Timeticks</td><td>-</td><td><code>8 days, 00:48:29</code></td><td>ระยะเวลาเปิดเครื่องต่อเนื่อง</td></tr>
+                <tr><td><strong>device_model</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.1.1.128.0</code></td><td>STRING</td><td>-</td><td><code>"ZXDUPA-BCUA (V1.0)"</code></td><td>รุ่นของบอร์ดควบคุม BMS</td></tr>
+                <tr><td><strong>brand_vendor</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.1.1.252.0</code></td><td>STRING</td><td>-</td><td><code>"PACO CASA"</code></td><td>แบรนด์ผู้ผลิต</td></tr>
+                <tr><td><strong>serial_number</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.1.1.13.0</code></td><td>STRING</td><td>-</td><td><code>"219579918809"</code></td><td>หมายเลข Serial Number</td></tr>
+                <tr><td><strong>firmware_ver</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.1.1.243.0</code></td><td>STRING</td><td>-</td><td><code>"V1.00.00.23"</code></td><td>เวอร์ชัน Firmware</td></tr>
+                <tr><td><strong>mac_address</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.1.1.244.0</code></td><td>STRING</td><td>-</td><td><code>"84-13-9F-CB-D1-F0"</code></td><td>MAC Address</td></tr>
+                <tr><td><strong>cpu_usage</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.1.53.0</code></td><td>INTEGER</td><td><strong>÷ 100</strong></td><td><code>1790</code> → <strong>17.90 %</strong></td><td>CPU Utilization</td></tr>
+                <tr><td><strong>ram_usage</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.1.54.0</code></td><td>INTEGER</td><td><strong>÷ 100</strong></td><td><code>2604</code> → <strong>26.04 %</strong></td><td>RAM Utilization</td></tr>
+            </tbody>
         </table>
 
         <h2>3. ตาราง OID พารามิเตอร์ระดับแพ็กแบตเตอรี่ (Battery Pack Metrics)</h2>
         <table>
-            <tr><th>พารามิเตอร์</th><th>SNMP OID</th><th>Type</th><th>Scale Factor</th><th>หน่วย</th><th>ค่าปกติ</th><th>คำอธิบาย</th></tr>
-            <tr><td><strong>Pack Voltage</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.120.1.2.1.1</code></td><td>INTEGER</td><td><strong>÷ 100</strong></td><td>VDC</td><td>48.0 - 54.5</td><td>แรงดันรวมขั้วแบตเตอรี่</td></tr>
-            <tr><td><strong>External Bus V</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.52.1.2.1.1</code></td><td>INTEGER</td><td><strong>÷ 100</strong></td><td>VDC</td><td>48.0 - 54.5</td><td>แรงดันบัสจ่ายไฟภายนอก</td></tr>
-            <tr><td><strong>Pack Current</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.119.1.2.1.1</code></td><td>INTEGER</td><td><strong>÷ 100</strong></td><td>A</td><td>-100 ถึง +100</td><td>กระแสแบตเตอรี่ (+ชาร์จ / -คายประจุ)</td></tr>
-            <tr><td><strong>Bus Current</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.59.1.2.1.1</code></td><td>INTEGER</td><td><strong>÷ 100</strong></td><td>A</td><td>-100 ถึง +100</td><td>กระแสโหลดรวมของบัส</td></tr>
-            <tr><td><strong>Battery SOC</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.102.1.2.1.1</code></td><td>INTEGER</td><td><strong>÷ 100</strong></td><td>%</td><td>0.0 - 100.0</td><td>State of Charge ความจุคงเหลือ</td></tr>
-            <tr><td><strong>Battery SOH</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.101.1.2.1.1</code></td><td>INTEGER</td><td><strong>1</strong></td><td>%</td><td>80 - 100</td><td>State of Health ความสมบูรณ์แบต</td></tr>
-            <tr><td><strong>Cycle Count</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.94.1.2.1.1</code></td><td>INTEGER</td><td><strong>1</strong></td><td>รอบ</td><td>สะสม</td><td>จำนวนรอบการชาร์จสะสม</td></tr>
-            <tr><td><strong>Operating Status</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.226.1.2.1.1</code></td><td>INTEGER</td><td>-</td><td>Enum</td><td><code>2</code> (Floating)</td><td>0=Discharge, 1=Charge, 2=Floating</td></tr>
-            <tr><td><strong>Discharge Energy</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.227.1.2.1.1</code></td><td>INTEGER</td><td><strong>1</strong></td><td>kWh</td><td>สะสม</td><td>พลังงานคายประจุสะสม</td></tr>
-            <tr><td><strong>Ambient Temp</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.5.9.1.2.1.1</code></td><td>INTEGER</td><td><strong>÷ 100</strong></td><td>°C</td><td>20.0 - 35.0</td><td>อุณหภูมิห้อง/แวดล้อม</td></tr>
+            <thead>
+                <tr><th style="width:18%;">พารามิเตอร์</th><th style="width:38%;">SNMP OID</th><th style="width:8%;">Type</th><th style="width:11%;">Scale Factor</th><th style="width:8%;">หน่วย</th><th style="width:12%;">ค่าปกติ</th><th>คำอธิบาย</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>Pack Voltage</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.120.1.2.1.1</code></td><td>INTEGER</td><td><strong>÷ 100</strong></td><td>VDC</td><td>48.0 - 54.5</td><td>แรงดันรวมขั้วแบตเตอรี่</td></tr>
+                <tr><td><strong>External Bus V</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.52.1.2.1.1</code></td><td>INTEGER</td><td><strong>÷ 100</strong></td><td>VDC</td><td>48.0 - 54.5</td><td>แรงดันบัสจ่ายไฟภายนอก</td></tr>
+                <tr><td><strong>Pack Current</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.119.1.2.1.1</code></td><td>INTEGER</td><td><strong>÷ 100</strong></td><td>A</td><td>-100 ถึง +100</td><td>กระแสแบตเตอรี่ (+ชาร์จ / -คายประจุ)</td></tr>
+                <tr><td><strong>Bus Current</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.59.1.2.1.1</code></td><td>INTEGER</td><td><strong>÷ 100</strong></td><td>A</td><td>-100 ถึง +100</td><td>กระแสโหลดรวมของบัส</td></tr>
+                <tr><td><strong>Battery SOC</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.102.1.2.1.1</code></td><td>INTEGER</td><td><strong>÷ 100</strong></td><td>%</td><td>0.0 - 100.0</td><td>State of Charge ความจุคงเหลือ</td></tr>
+                <tr><td><strong>Battery SOH</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.101.1.2.1.1</code></td><td>INTEGER</td><td><strong>1</strong></td><td>%</td><td>80 - 100</td><td>State of Health ความสมบูรณ์แบต</td></tr>
+                <tr><td><strong>Cycle Count</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.94.1.2.1.1</code></td><td>INTEGER</td><td><strong>1</strong></td><td>รอบ</td><td>สะสม</td><td>จำนวนรอบการชาร์จสะสม</td></tr>
+                <tr><td><strong>Operating Status</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.226.1.2.1.1</code></td><td>INTEGER</td><td>-</td><td>Enum</td><td><code>2</code> (Floating)</td><td>0=Discharge, 1=Charge, 2=Floating</td></tr>
+                <tr><td><strong>Discharge Energy</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.227.1.2.1.1</code></td><td>INTEGER</td><td><strong>1</strong></td><td>kWh</td><td>สะสม</td><td>พลังงานคายประจุสะสม</td></tr>
+                <tr><td><strong>Ambient Temp</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.5.9.1.2.1.1</code></td><td>INTEGER</td><td><strong>÷ 100</strong></td><td>°C</td><td>20.0 - 35.0</td><td>อุณหภูมิห้อง/แวดล้อม</td></tr>
+            </tbody>
         </table>
 
         <h2>4. ตาราง OID แรงดันเซลล์ลิเธียมแยกรายเซลล์ 15 เซลล์ (15S Cell Voltages)</h2>
         <p>⚠️ <strong>ข้อสังเกต:</strong> ค่าดิบจาก SNMP เป็นตัวเลขจำนวนเต็มหน่วย <strong>มิลลิโวลต์ (mV)</strong> ต้องนำมา <strong><code>÷ 1000</code></strong> เพื่อแปลงเป็นโวลต์ (V) ทศนิยม 3 ตำแหน่ง</p>
         <table>
-            <tr><th>เซลล์</th><th>SNMP OID</th><th>ค่าดิบตัวอย่าง</th><th>ค่าแปลงผล (V)</th><th>เซลล์</th><th>SNMP OID</th><th>ค่าดิบตัวอย่าง</th><th>ค่าแปลงผล (V)</th></tr>
-            <tr><td><strong>Cell 01</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.163.1.2.1.1</code></td><td>3605</td><td><strong>3.605 V</strong></td><td><strong>Cell 09</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.177.1.2.1.1</code></td><td>3603</td><td><strong>3.603 V</strong></td></tr>
-            <tr><td><strong>Cell 02</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.164.1.2.1.1</code></td><td>3605</td><td><strong>3.605 V</strong></td><td><strong>Cell 10</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.178.1.2.1.1</code></td><td>3589</td><td><strong>3.589 V</strong></td></tr>
-            <tr><td><strong>Cell 03</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.165.1.2.1.1</code></td><td>3601</td><td><strong>3.601 V</strong></td><td><strong>Cell 11</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.179.1.2.1.1</code></td><td>3595</td><td><strong>3.595 V</strong></td></tr>
-            <tr><td><strong>Cell 04</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.166.1.2.1.1</code></td><td>3608</td><td><strong>3.608 V</strong></td><td><strong>Cell 12</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.180.1.2.1.1</code></td><td>3595</td><td><strong>3.595 V</strong></td></tr>
-            <tr><td><strong>Cell 05</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.167.1.2.1.1</code></td><td>3598</td><td><strong>3.598 V</strong></td><td><strong>Cell 13</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.181.1.2.1.1</code></td><td>3605</td><td><strong>3.605 V</strong></td></tr>
-            <tr><td><strong>Cell 06</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.168.1.2.1.1</code></td><td>3583</td><td><strong>3.583 V</strong></td><td><strong>Cell 14</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.182.1.2.1.1</code></td><td>3606</td><td><strong>3.606 V</strong></td></tr>
-            <tr><td><strong>Cell 07</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.169.1.2.1.1</code></td><td>3612</td><td><strong>3.612 V</strong></td><td><strong>Cell 15</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.183.1.2.1.1</code></td><td>3592</td><td><strong>3.592 V</strong></td></tr>
-            <tr><td><strong>Cell 08</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.176.1.2.1.1</code></td><td>3604</td><td><strong>3.604 V</strong></td><td colspan="4"><em>คำนวณ Delta Spread: Max (3.612V) - Min (3.583V) = 29 mV</em></td></tr>
+            <thead>
+                <tr><th style="width:10%;">เซลล์</th><th style="width:28%;">SNMP OID</th><th style="width:10%;">ค่าดิบ (mV)</th><th style="width:12%;">แปลงผล (V)</th><th style="width:10%;">เซลล์</th><th style="width:28%;">SNMP OID</th><th style="width:10%;">ค่าดิบ (mV)</th><th style="width:12%;">แปลงผล (V)</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>Cell 01</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.163.1.2.1.1</code></td><td>3605</td><td><strong>3.605 V</strong></td><td><strong>Cell 09</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.177.1.2.1.1</code></td><td>3603</td><td><strong>3.603 V</strong></td></tr>
+                <tr><td><strong>Cell 02</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.164.1.2.1.1</code></td><td>3605</td><td><strong>3.605 V</strong></td><td><strong>Cell 10</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.178.1.2.1.1</code></td><td>3589</td><td><strong>3.589 V</strong></td></tr>
+                <tr><td><strong>Cell 03</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.165.1.2.1.1</code></td><td>3601</td><td><strong>3.601 V</strong></td><td><strong>Cell 11</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.179.1.2.1.1</code></td><td>3595</td><td><strong>3.595 V</strong></td></tr>
+                <tr><td><strong>Cell 04</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.166.1.2.1.1</code></td><td>3608</td><td><strong>3.608 V</strong></td><td><strong>Cell 12</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.180.1.2.1.1</code></td><td>3595</td><td><strong>3.595 V</strong></td></tr>
+                <tr><td><strong>Cell 05</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.167.1.2.1.1</code></td><td>3598</td><td><strong>3.598 V</strong></td><td><strong>Cell 13</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.181.1.2.1.1</code></td><td>3605</td><td><strong>3.605 V</strong></td></tr>
+                <tr><td><strong>Cell 06</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.168.1.2.1.1</code></td><td>3583</td><td><strong>3.583 V</strong></td><td><strong>Cell 14</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.182.1.2.1.1</code></td><td>3606</td><td><strong>3.606 V</strong></td></tr>
+                <tr><td><strong>Cell 07</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.169.1.2.1.1</code></td><td>3612</td><td><strong>3.612 V</strong></td><td><strong>Cell 15</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.183.1.2.1.1</code></td><td>3592</td><td><strong>3.592 V</strong></td></tr>
+                <tr><td><strong>Cell 08</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.176.1.2.1.1</code></td><td>3604</td><td><strong>3.604 V</strong></td><td colspan="4" style="background:#f1f5f9; font-weight:700;">คำนวณ Delta Spread: Max (3.612V) - Min (3.583V) = 29 mV</td></tr>
+            </tbody>
         </table>
 
         <h2>5. ตาราง OID เซ็นเซอร์วัดอุณหภูมิเซลล์ (Thermal Sensors)</h2>
         <table>
-            <tr><th>เซ็นเซอร์</th><th>SNMP OID</th><th>Type</th><th>Scale Factor</th><th>ค่าตัวอย่าง</th><th>ตำแหน่งตรวจวัด</th></tr>
-            <tr><td><strong>Cell Temp 1</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.185.1.2.1.1</code></td><td>INTEGER</td><td><strong>÷ 100</strong></td><td><code>2610</code> → <strong>26.10 °C</strong></td><td>โซนเซลล์ชุดที่ 1-4</td></tr>
-            <tr><td><strong>Cell Temp 2</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.192.1.2.1.1</code></td><td>INTEGER</td><td><strong>÷ 100</strong></td><td><code>2630</code> → <strong>26.30 °C</strong></td><td>โซนเซลล์ชุดที่ 5-8</td></tr>
-            <tr><td><strong>Cell Temp 3</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.193.1.2.1.1</code></td><td>INTEGER</td><td><strong>÷ 100</strong></td><td><code>2600</code> → <strong>26.00 °C</strong></td><td>โซนเซลล์ชุดที่ 9-12</td></tr>
-            <tr><td><strong>Cell Temp 4</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.194.1.2.1.1</code></td><td>INTEGER</td><td><strong>÷ 100</strong></td><td><code>2580</code> → <strong>25.80 °C</strong></td><td>โซนเซลล์ชุดที่ 13-15</td></tr>
+            <thead>
+                <tr><th style="width:20%;">เซ็นเซอร์</th><th style="width:40%;">SNMP OID</th><th style="width:10%;">Type</th><th style="width:12%;">Scale Factor</th><th style="width:18%;">ค่าตัวอย่าง</th><th>ตำแหน่งตรวจวัด</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>Cell Temp 1</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.185.1.2.1.1</code></td><td>INTEGER</td><td><strong>÷ 100</strong></td><td><code>2610</code> → <strong>26.10 °C</strong></td><td>โซนเซลล์ชุดที่ 1-4</td></tr>
+                <tr><td><strong>Cell Temp 2</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.192.1.2.1.1</code></td><td>INTEGER</td><td><strong>÷ 100</strong></td><td><code>2630</code> → <strong>26.30 °C</strong></td><td>โซนเซลล์ชุดที่ 5-8</td></tr>
+                <tr><td><strong>Cell Temp 3</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.193.1.2.1.1</code></td><td>INTEGER</td><td><strong>÷ 100</strong></td><td><code>2600</code> → <strong>26.00 °C</strong></td><td>โซนเซลล์ชุดที่ 9-12</td></tr>
+                <tr><td><strong>Cell Temp 4</strong></td><td><code>.1.3.6.1.4.1.3902.2800.1.2.3.4.194.1.2.1.1</code></td><td>INTEGER</td><td><strong>÷ 100</strong></td><td><code>2580</code> → <strong>25.80 °C</strong></td><td>โซนเซลล์ชุดที่ 13-15</td></tr>
+            </tbody>
         </table>
 
         <h2>6. สูตรและ Business Logic สำหรับทำ Dashboard</h2>
         <ul>
             <li><strong>Cell Delta Spread (ความบาลานซ์):</strong> <code>Delta_mV = (Max(Cell_1..15) - Min(Cell_1..15)) * 1000</code>
-                <ul>
+                <ul style="margin-top:0.5rem;">
                     <li><code><= 20 mV</code>: <span class="badge badge-green">ดีเยี่ยม (Balanced)</span></li>
-                    <li><code>21 - 40 mV</code>: <span class="badge" style="background:rgba(245,158,11,0.2);color:#f59e0b;">ปกติ (Acceptable)</span></li>
-                    <li><code>> 40 mV</code>: <span class="badge" style="background:rgba(244,63,94,0.2);color:#f43f5e;">เตือนไม่สมดุล (Imbalance Alert)</span></li>
+                    <li><code>21 - 40 mV</code>: <span class="badge badge-yellow">ปกติ (Acceptable)</span></li>
+                    <li><code>> 40 mV</code>: <span class="badge badge-red">เตือนไม่สมดุล (Imbalance Alert)</span></li>
                 </ul>
             </li>
             <li><strong>Current Direction:</strong> ค่าบวก (+) หมายถึงกำลังชาร์จไฟเข้า, ค่าลบ (-) หมายถึงกำลังจ่ายไฟเลี้ยงโหลด</li>
