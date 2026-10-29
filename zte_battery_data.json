@@ -1,48 +1,89 @@
 {
-  "timestamp": "29/10/2569 07:45:08",
-  "device_ip": "10.237.77.208",
-  "protocol": "Web API Fallback",
-  "snmp_community": "None (Fallback API)",
-  "metadata": {
-    "brand": "PACO CASA",
-    "model": "ZXDUPA-BCUA (V1.0)",
-    "serial": "219579918809",
-    "firmware": "V1.00.00.23",
-    "mac": "84-13-9F-CB-D1-F0"
-  },
-  "battery": {
-    "pack_voltage": 54.01,
-    "external_voltage": 54.02,
-    "pack_current": 0.03,
-    "bus_current": 0.03,
-    "soc_pct": 100,
-    "soh_pct": 100,
-    "cycle_count": 1,
-    "ambient_temp_c": 30.6,
-    "status": "Online / Floating"
-  },
-  "cells": [
-    3.605,
-    3.605,
-    3.601,
-    3.607,
-    3.598,
-    3.584,
-    3.612,
-    3.604,
-    3.603,
-    3.59,
-    3.595,
-    3.596,
-    3.605,
-    3.607,
-    3.593
-  ],
+  "name": "T3 Battery monitor",
+  "ip": "10.237.77.208",
+  "snmp_port": 161,
+  "community": "PowerPub",
+  "model": "ZXDUPA-BCUA (V1.0)",
+  "brand": "PACO CASA",
+  "serial": "219579918809",
+  "firmware": "V1.00.00.23",
+  "mac": "84-13-9F-CB-D1-F0",
+  "status": "Online / Floating",
+  "pack_voltage": 54,
+  "external_voltage": 54.01,
+  "pack_current": -0.02,
+  "bus_current": -0.02,
+  "soc": 100,
+  "soh": 100,
+  "cycle_count": 1,
+  "ambient_temp": 30.6,
   "cell_temps": [
     25.3,
-    25.5,
-    24.9,
-    24.8
+    25.4,
+    25,
+    24.9
+  ],
+  "cells": [
+    {
+      "cell": 1,
+      "voltage": 3.604
+    },
+    {
+      "cell": 2,
+      "voltage": 3.605
+    },
+    {
+      "cell": 3,
+      "voltage": 3.601
+    },
+    {
+      "cell": 4,
+      "voltage": 3.607
+    },
+    {
+      "cell": 5,
+      "voltage": 3.597
+    },
+    {
+      "cell": 6,
+      "voltage": 3.584
+    },
+    {
+      "cell": 7,
+      "voltage": 3.612
+    },
+    {
+      "cell": 8,
+      "voltage": 3.604
+    },
+    {
+      "cell": 9,
+      "voltage": 3.603
+    },
+    {
+      "cell": 10,
+      "voltage": 3.59
+    },
+    {
+      "cell": 11,
+      "voltage": 3.594
+    },
+    {
+      "cell": 12,
+      "voltage": 3.596
+    },
+    {
+      "cell": 13,
+      "voltage": 3.604
+    },
+    {
+      "cell": 14,
+      "voltage": 3.606
+    },
+    {
+      "cell": 15,
+      "voltage": 3.593
+    }
   ],
   "cell_min": 3.584,
   "cell_max": 3.612,
