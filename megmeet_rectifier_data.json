@@ -7,8 +7,8 @@
     "firmware": "V2.320241218080000",
     "app_version": "V2.031420",
     "model": "Controller",
-    "uptime": "57 days, 14:15:42.73",
-    "last_updated": "01/11/2569 01:59:22"
+    "uptime": "57 days, 14:20:42.78",
+    "last_updated": "01/11/2569 02:04:22"
   },
   "network": {
     "ipv4": "10.237.77.232",
@@ -27,47 +27,47 @@
     ]
   },
   "ac_input": {
-    "voltage": 228.1,
-    "current": 5.6,
+    "voltage": 228.4,
+    "current": 5.74,
     "frequency": 49.9,
-    "active_power_kw": 1.28,
-    "total_energy_kwh": 2561
+    "active_power_kw": 1.31,
+    "total_energy_kwh": 2664
   },
   "dc_system": {
     "bus_voltage": 54,
-    "load_current": 22.44,
-    "load_power_w": 1212,
-    "efficiency_pct": 94.7
+    "load_current": 22.45,
+    "load_power_w": 1213,
+    "efficiency_pct": 92.6
   },
   "modules": [
     {
       "id": 1,
       "serial": "1817Z530268254407862",
-      "vin": 228,
+      "vin": 227.6,
       "vout": 53.8,
-      "iout": 7.76,
-      "power": 417,
-      "temp": 26.5,
+      "iout": 7.63,
+      "power": 410,
+      "temp": 27,
       "status": "Normal"
     },
     {
       "id": 2,
       "serial": "1817Z530268254407939",
-      "vin": 227.6,
+      "vin": 228,
       "vout": 53.7,
-      "iout": 7.66,
-      "power": 411,
-      "temp": 26.5,
+      "iout": 7.69,
+      "power": 412,
+      "temp": 26.8,
       "status": "Normal"
     },
     {
       "id": 3,
       "serial": "1817Z530268254407857",
-      "vin": 228.1,
-      "vout": 53.8,
-      "iout": 7.72,
-      "power": 415,
-      "temp": 26.5,
+      "vin": 228.5,
+      "vout": 53.9,
+      "iout": 7.69,
+      "power": 414,
+      "temp": 27,
       "status": "Normal"
     }
   ],
@@ -141,8 +141,8 @@
     ]
   },
   "environment": {
-    "cabinet_temp": 24.2,
-    "cabinet_humidity": 75.5
+    "cabinet_temp": 24.7,
+    "cabinet_humidity": 76.5
   },
   "alarms": {
     "active_count": 0,
@@ -250,20 +250,6 @@
     ]
   },
   "history": [
-    {
-      "time": "02:04",
-      "dt": "10-31 02:04",
-      "ts": 1793387064461,
-      "ac_v": 230.4,
-      "dc_v": 54,
-      "ac_i": 5.57,
-      "dc_i": 21.96,
-      "mod1_i": 7.44,
-      "mod2_i": 7.61,
-      "mod3_i": 7.56,
-      "ac_p_kw": 1.28,
-      "dc_p_w": 1186
-    },
     {
       "time": "02:09",
       "dt": "10-31 02:09",
@@ -4281,6 +4267,20 @@
       "mod3_i": 7.72,
       "ac_p_kw": 1.28,
       "dc_p_w": 1212
+    },
+    {
+      "time": "02:04",
+      "dt": "11-01 02:04",
+      "ts": 1793473467960,
+      "ac_v": 228.4,
+      "dc_v": 54,
+      "ac_i": 5.74,
+      "dc_i": 22.45,
+      "mod1_i": 7.63,
+      "mod2_i": 7.69,
+      "mod3_i": 7.69,
+      "ac_p_kw": 1.31,
+      "dc_p_w": 1213
     }
   ],
   "t3_battery": {
@@ -4294,10 +4294,10 @@
     "firmware": "V1.00.00.23",
     "mac": "84-13-9F-CB-D1-F0",
     "status": "Online / Floating",
-    "pack_voltage": 54,
-    "external_voltage": 54.01,
-    "pack_current": 0.12,
-    "bus_current": 0.12,
+    "pack_voltage": 54.01,
+    "external_voltage": 54.02,
+    "pack_current": 0.05,
+    "bus_current": 0.05,
     "soc": 100,
     "soh": 100,
     "cycle_count": 1,
@@ -4305,13 +4305,13 @@
     "cell_temps": [
       25,
       25.1,
-      24.7,
+      24.8,
       24.6
     ],
     "cells": [
       {
         "cell": 1,
-        "voltage": 3.604
+        "voltage": 3.605
       },
       {
         "cell": 2,
@@ -4327,7 +4327,7 @@
       },
       {
         "cell": 5,
-        "voltage": 3.597
+        "voltage": 3.598
       },
       {
         "cell": 6,
@@ -4343,7 +4343,7 @@
       },
       {
         "cell": 9,
-        "voltage": 3.602
+        "voltage": 3.603
       },
       {
         "cell": 10,
@@ -4351,7 +4351,7 @@
       },
       {
         "cell": 11,
-        "voltage": 3.594
+        "voltage": 3.595
       },
       {
         "cell": 12,
@@ -4359,11 +4359,11 @@
       },
       {
         "cell": 13,
-        "voltage": 3.604
+        "voltage": 3.605
       },
       {
         "cell": 14,
-        "voltage": 3.606
+        "voltage": 3.607
       },
       {
         "cell": 15,
