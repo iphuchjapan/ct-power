@@ -7,8 +7,8 @@
     "firmware": "V2.320241218080000",
     "app_version": "V2.031420",
     "model": "Controller",
-    "uptime": "64 days, 6:11:14.26",
-    "last_updated": "07/11/2569 17:54:56"
+    "uptime": "64 days, 6:11:24.02",
+    "last_updated": "07/11/2569 17:55:05"
   },
   "network": {
     "ipv4": "10.237.77.232",
@@ -27,23 +27,23 @@
     ]
   },
   "ac_input": {
-    "voltage": 227.4,
-    "current": 5.77,
+    "voltage": 227,
+    "current": 5.79,
     "frequency": 49.9,
-    "active_power_kw": 1.31,
+    "active_power_kw": 1.32,
     "total_energy_kwh": 23605
   },
   "dc_system": {
     "bus_voltage": 54,
-    "load_current": 23.05,
-    "load_power_w": 1245,
-    "efficiency_pct": 95
+    "load_current": 22.99,
+    "load_power_w": 1242,
+    "efficiency_pct": 94.1
   },
   "modules": [
     {
       "id": 1,
       "serial": "1817Z530268254407862",
-      "vin": 227.2,
+      "vin": 227.1,
       "vout": 53.8,
       "iout": 7.94,
       "power": 427,
@@ -53,20 +53,20 @@
     {
       "id": 2,
       "serial": "1817Z530268254407939",
-      "vin": 226.8,
+      "vin": 226.5,
       "vout": 53.7,
-      "iout": 7.78,
-      "power": 417,
-      "temp": 27.1,
+      "iout": 7.79,
+      "power": 418,
+      "temp": 27.2,
       "status": "Normal"
     },
     {
       "id": 3,
       "serial": "1817Z530268254407857",
-      "vin": 227.2,
+      "vin": 227,
       "vout": 53.9,
-      "iout": 7.83,
-      "power": 421,
+      "iout": 8.15,
+      "power": 439,
       "temp": 27.2,
       "status": "Normal"
     }
@@ -5205,6 +5205,20 @@
       "mod3_i": 7.83,
       "ac_p_kw": 1.31,
       "dc_p_w": 1245
+    },
+    {
+      "time": "17:55",
+      "dt": "11-07 17:55",
+      "ts": 1794048911247,
+      "ac_v": 227,
+      "dc_v": 54,
+      "ac_i": 5.79,
+      "dc_i": 22.99,
+      "mod1_i": 7.94,
+      "mod2_i": 7.79,
+      "mod3_i": 8.15,
+      "ac_p_kw": 1.32,
+      "dc_p_w": 1242
     }
   ],
   "t3_battery": {
