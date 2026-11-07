@@ -7,8 +7,8 @@
     "firmware": "V2.320241218080000",
     "app_version": "V2.031420",
     "model": "Controller",
-    "uptime": "64 days, 10:21:15.13",
-    "last_updated": "07/11/2569 22:04:57"
+    "uptime": "64 days, 10:21:24.62",
+    "last_updated": "07/11/2569 22:05:06"
   },
   "network": {
     "ipv4": "10.237.77.232",
@@ -27,23 +27,23 @@
     ]
   },
   "ac_input": {
-    "voltage": 226.8,
-    "current": 5.76,
+    "voltage": 226.7,
+    "current": 5.83,
     "frequency": 50.1,
-    "active_power_kw": 1.31,
+    "active_power_kw": 1.32,
     "total_energy_kwh": 29140
   },
   "dc_system": {
     "bus_voltage": 54,
-    "load_current": 23.02,
-    "load_power_w": 1243,
-    "efficiency_pct": 94.9
+    "load_current": 23.22,
+    "load_power_w": 1254,
+    "efficiency_pct": 95
   },
   "modules": [
     {
       "id": 1,
       "serial": "1817Z530268254407862",
-      "vin": 226.7,
+      "vin": 226.6,
       "vout": 53.8,
       "iout": 7.8,
       "power": 419,
@@ -55,18 +55,18 @@
       "serial": "1817Z530268254407939",
       "vin": 226.3,
       "vout": 53.7,
-      "iout": 7.85,
-      "power": 421,
+      "iout": 7.91,
+      "power": 424,
       "temp": 27.2,
       "status": "Normal"
     },
     {
       "id": 3,
       "serial": "1817Z530268254407857",
-      "vin": 226.3,
+      "vin": 226.6,
       "vout": 53.9,
-      "iout": 7.91,
-      "power": 426,
+      "iout": 8.04,
+      "power": 432,
       "temp": 28,
       "status": "Normal"
     }
@@ -142,7 +142,7 @@
   },
   "environment": {
     "cabinet_temp": 26.1,
-    "cabinet_humidity": 78.9
+    "cabinet_humidity": 79
   },
   "alarms": {
     "active_count": 0,
@@ -5905,6 +5905,20 @@
       "mod3_i": 7.91,
       "ac_p_kw": 1.31,
       "dc_p_w": 1243
+    },
+    {
+      "time": "22:05",
+      "dt": "11-07 22:05",
+      "ts": 1794063911786,
+      "ac_v": 226.7,
+      "dc_v": 54,
+      "ac_i": 5.83,
+      "dc_i": 23.22,
+      "mod1_i": 7.8,
+      "mod2_i": 7.91,
+      "mod3_i": 8.04,
+      "ac_p_kw": 1.32,
+      "dc_p_w": 1254
     }
   ],
   "t3_battery": {
