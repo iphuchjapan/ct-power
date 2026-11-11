@@ -7,8 +7,8 @@
     "firmware": "V2.320241218080000",
     "app_version": "V2.031420",
     "model": "Controller",
-    "uptime": "67 days, 20:34:48.41",
-    "last_updated": "11/11/2569 08:18:32"
+    "uptime": "67 days, 20:39:48.17",
+    "last_updated": "11/11/2569 08:23:31"
   },
   "network": {
     "ipv4": "10.237.77.232",
@@ -27,27 +27,27 @@
     ]
   },
   "ac_input": {
-    "voltage": 228.4,
-    "current": 6.8,
+    "voltage": 227.7,
+    "current": 6.81,
     "frequency": 50,
-    "active_power_kw": 1.56,
-    "total_energy_kwh": 12831
+    "active_power_kw": 1.55,
+    "total_energy_kwh": 12934
   },
   "dc_system": {
     "bus_voltage": 54,
-    "load_current": 27.32,
-    "load_power_w": 1475,
-    "efficiency_pct": 94.6
+    "load_current": 27.35,
+    "load_power_w": 1477,
+    "efficiency_pct": 95.3
   },
   "modules": [
     {
       "id": 1,
       "serial": "1817Z530268254407862",
-      "vin": 228.4,
+      "vin": 227.8,
       "vout": 53.8,
       "iout": 9.31,
       "power": 501,
-      "temp": 27.4,
+      "temp": 27,
       "status": "Normal"
     },
     {
@@ -55,19 +55,19 @@
       "serial": "1817Z530268254407939",
       "vin": 227.4,
       "vout": 53.7,
-      "iout": 9.27,
-      "power": 498,
-      "temp": 27.2,
+      "iout": 9.32,
+      "power": 500,
+      "temp": 26.8,
       "status": "Normal"
     },
     {
       "id": 3,
       "serial": "1817Z530268254407857",
-      "vin": 228.5,
+      "vin": 227.2,
       "vout": 53.9,
-      "iout": 9.28,
-      "power": 500,
-      "temp": 27.4,
+      "iout": 9.35,
+      "power": 504,
+      "temp": 27,
       "status": "Normal"
     }
   ],
@@ -141,8 +141,8 @@
     ]
   },
   "environment": {
-    "cabinet_temp": 24.8,
-    "cabinet_humidity": 76.6
+    "cabinet_temp": 24.2,
+    "cabinet_humidity": 75.5
   },
   "alarms": {
     "active_count": 0,
@@ -250,20 +250,6 @@
     ]
   },
   "history": [
-    {
-      "time": "17:45",
-      "dt": "11-08 17:45",
-      "ts": 1794134710739,
-      "ac_v": 229.4,
-      "dc_v": 54,
-      "ac_i": 5.8,
-      "dc_i": 23.01,
-      "mod1_i": 7.68,
-      "mod2_i": 7.85,
-      "mod3_i": 7.77,
-      "ac_p_kw": 1.33,
-      "dc_p_w": 1243
-    },
     {
       "time": "17:50",
       "dt": "11-08 17:50",
@@ -8313,6 +8299,20 @@
       "mod3_i": 9.28,
       "ac_p_kw": 1.56,
       "dc_p_w": 1475
+    },
+    {
+      "time": "08:23",
+      "dt": "11-11 08:23",
+      "ts": 1794360211588,
+      "ac_v": 227.7,
+      "dc_v": 54,
+      "ac_i": 6.81,
+      "dc_i": 27.35,
+      "mod1_i": 9.31,
+      "mod2_i": 9.32,
+      "mod3_i": 9.35,
+      "ac_p_kw": 1.55,
+      "dc_p_w": 1477
     }
   ],
   "t3_battery": {
