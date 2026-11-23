@@ -7,8 +7,8 @@
     "firmware": "V2.320241218080000",
     "app_version": "V2.031420",
     "model": "Controller",
-    "uptime": "80 days, 1:58:24.49",
-    "last_updated": "23/11/2569 13:42:12"
+    "uptime": "80 days, 2:03:24.49",
+    "last_updated": "23/11/2569 13:47:12"
   },
   "network": {
     "ipv4": "10.237.77.232",
@@ -27,47 +27,47 @@
     ]
   },
   "ac_input": {
-    "voltage": 225.6,
-    "current": 9.04,
+    "voltage": 224.7,
+    "current": 8.91,
     "frequency": 50,
-    "active_power_kw": 2.04,
-    "total_energy_kwh": 22232
+    "active_power_kw": 2,
+    "total_energy_kwh": 22434
   },
   "dc_system": {
     "bus_voltage": 54,
-    "load_current": 35.77,
-    "load_power_w": 1931,
-    "efficiency_pct": 94.7
+    "load_current": 35.02,
+    "load_power_w": 1891,
+    "efficiency_pct": 94.5
   },
   "modules": [
     {
       "id": 1,
       "serial": "1817Z530268254407862",
-      "vin": 225.6,
+      "vin": 224.8,
       "vout": 53.8,
-      "iout": 12.13,
-      "power": 653,
-      "temp": 28,
+      "iout": 11.88,
+      "power": 639,
+      "temp": 27.8,
       "status": "Normal"
     },
     {
       "id": 2,
       "serial": "1817Z530268254407939",
-      "vin": 224.6,
+      "vin": 224.2,
       "vout": 53.7,
-      "iout": 12.16,
-      "power": 653,
-      "temp": 28,
+      "iout": 11.98,
+      "power": 643,
+      "temp": 27.8,
       "status": "Normal"
     },
     {
       "id": 3,
       "serial": "1817Z530268254407857",
-      "vin": 225.6,
+      "vin": 224.7,
       "vout": 53.9,
-      "iout": 12.17,
-      "power": 656,
-      "temp": 28.6,
+      "iout": 11.95,
+      "power": 644,
+      "temp": 28.4,
       "status": "Normal"
     }
   ],
@@ -250,20 +250,6 @@
     ]
   },
   "history": [
-    {
-      "time": "13:19",
-      "dt": "11-21 13:19",
-      "ts": 1795241945102,
-      "ac_v": 229.7,
-      "dc_v": 54,
-      "ac_i": 6.34,
-      "dc_i": 26.03,
-      "mod1_i": 8.91,
-      "mod2_i": 8.89,
-      "mod3_i": 8.77,
-      "ac_p_kw": 1.46,
-      "dc_p_w": 1406
-    },
     {
       "time": "13:24",
       "dt": "11-21 13:24",
@@ -8313,6 +8299,20 @@
       "mod3_i": 12.17,
       "ac_p_kw": 2.04,
       "dc_p_w": 1931
+    },
+    {
+      "time": "13:47",
+      "dt": "11-23 13:47",
+      "ts": 1795416432103,
+      "ac_v": 224.7,
+      "dc_v": 54,
+      "ac_i": 8.91,
+      "dc_i": 35.02,
+      "mod1_i": 11.88,
+      "mod2_i": 11.98,
+      "mod3_i": 11.95,
+      "ac_p_kw": 2,
+      "dc_p_w": 1891
     }
   ],
   "t3_battery": {
